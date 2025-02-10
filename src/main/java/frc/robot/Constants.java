@@ -63,13 +63,32 @@ public final class Constants {
 
     public static final boolean kGyroReversed = false;
   }
+
+  public static final class ControllerConstants{
+
+    public static final int intakeButton = 3;
+    public static final int outnormButton = 4;
+    public static final int outleftButton = 5;
+    public static final int outrightButton = 6;
+    public static final int eleupButton = 7;
+    public static final int elevdownButton = 8;
+    public static final int eleintakeButton = 9;
+    public static final int elevel1Button = 10;
+    public static final int elevel2Button = 11;
+    public static final int elevel3Button = 12;
+    public static final int elevel4Button = 13;
+    public static final int algaeremoButton = 14;
+
+    
+
+  }
   public static final class RobotConstants {
 
     public static final int RightElevartorCanId = 18;
-    public static final int LeftElevatorCanId = 22;
+    public static final int LeftElevatorCanId = 19;
     public static final int LeftOuttakeCanId = 20;
     public static final int RightOuttakeCanId = 21;
-    public static final int IntakeCanId = 19;
+    public static final int IntakeCanId = 22;
     public static final int AlgaeRemoverArmCanId = 23;
     public static final int AlgaeRemoverSpinnerCanID = 24;
   }

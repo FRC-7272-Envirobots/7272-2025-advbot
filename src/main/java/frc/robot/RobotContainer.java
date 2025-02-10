@@ -17,10 +17,13 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.OuttakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
@@ -37,6 +40,10 @@ public class RobotContainer {
   // The robot's subsystems
   private final DriveSubsystem m_robotDrive = new DriveSubsystem();
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
+    private final OuttakeSubsystem m_outtake = new OuttakeSubsystem();
+    private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
+
+
   // The driver's controller
   public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
   Joystick m_arcadeBox = new Joystick(1);
@@ -75,11 +82,39 @@ public class RobotContainer {
             () -> m_robotDrive.setX(),
             m_robotDrive));
 
+    //intake button 
     new JoystickButton(m_driverController, 4)
         .whileTrue(new RunCommand(
              ()-> m_intake.runIntake(),
               m_intake))
         .whileFalse(new RunCommand(()->m_intake.stopIntake(), m_intake));
+
+    //outtake button
+    new JoystickButton(m_driverController,ControllerConstants.outnormButton )
+        .whileTrue(new RunCommand(
+            ()-> m_outtake.normalOuttake(),
+             m_outtake))
+        .whileFalse(new RunCommand(
+            ()->m_outtake.stopOuttake()
+            ,m_outtake));
+
+    //elevator up control
+    new JoystickButton(m_driverController, ControllerConstants.eleupButton)
+        .whileTrue(new RunCommand(
+            ()-> m_elevator.elevatorUp(), m_elevator))
+        .whileFalse(new RunCommand(
+            ()->m_elevator.elevatorStop(),m_elevator
+        ));
+
+    //elevato down contol 
+    new JoystickButton(m_driverController, ControllerConstants.elevdownButton)
+        .whileTrue(new RunCommand(
+            ()-> m_elevator.elevatorDown(), m_elevator))
+        .whileFalse(new RunCommand(
+            ()->m_elevator.elevatorStop(),m_elevator
+        ));
+
+
 
 
 
