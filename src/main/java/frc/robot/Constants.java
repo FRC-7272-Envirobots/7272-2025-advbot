@@ -66,10 +66,10 @@ public final class Constants {
   public static final class RobotConstants {
 
     public static final int RightElevartorCanId = 18;
-    public static final int LeftElevatorCanId = 19;
+    public static final int LeftElevatorCanId = 22;
     public static final int LeftOuttakeCanId = 20;
     public static final int RightOuttakeCanId = 21;
-    public static final int IntakeCanId = 22;
+    public static final int IntakeCanId = 19;
     public static final int AlgaeRemoverArmCanId = 23;
     public static final int AlgaeRemoverSpinnerCanID = 24;
   }
