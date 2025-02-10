@@ -6,6 +6,10 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
+
+import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
+
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -43,7 +47,8 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kBackRightChassisAngularOffset);
 
   // The gyro sensor
-  public final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro();
+ // public final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro();
+    public final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
 
   // Odometry class for tracking robot pose
   SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
