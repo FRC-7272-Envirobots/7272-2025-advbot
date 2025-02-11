@@ -82,6 +82,18 @@ public final class Constants {
     
 
   }
+
+  public static final class ElevatorConstants{
+
+    public static final int elevatorIntake = 0;
+    public static final int elevatorL1 =1;
+    public static final int elevatorL2 =2;
+    public static final int elevatorL3 =3;
+    public static final int elevatorL4 =4;
+    
+
+  }
+
   public static final class RobotConstants {
 
     public static final int RightElevartorCanId = 18;
