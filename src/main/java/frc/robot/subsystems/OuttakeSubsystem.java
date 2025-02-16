@@ -13,8 +13,8 @@ public class OuttakeSubsystem extends SubsystemBase{
     TalonFX m_rightouttake = new TalonFX(RobotConstants.RightOuttakeCanId);
 
     public void normalOuttake(){
-        m_leftouttake.set(.3);
-        m_rightouttake.set(.3);
+        m_leftouttake.set(.1);
+        m_rightouttake.set(-.1);
 
     }
     public void stopOuttake(){

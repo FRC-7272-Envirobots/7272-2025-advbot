@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotConstants;
@@ -22,15 +24,10 @@ public class ElevatorSubsystem extends SubsystemBase{
     public double intakepos = ElevatorConstants.elevatorIntake;
 
 
-   public ElevatorSubsystem(){
+   
 
-    limitSwitch1 = new DigitalInput(7);
-    limitSwitch2 = new DigitalInput(8);
-
-    
-
-
-   }
+   
+   
 
     //basic elevator commands 
     public void elevatorUp(){
@@ -46,6 +43,7 @@ public class ElevatorSubsystem extends SubsystemBase{
         m_leftelevator.set(0);
         m_rightelevator.set(0);
     }
-
-
+   
+    
+ 
 }

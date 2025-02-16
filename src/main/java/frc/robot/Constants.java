@@ -67,11 +67,11 @@ public final class Constants {
   public static final class ControllerConstants{
 
     public static final int intakeButton = 3;
-    public static final int outnormButton = 4;
-    public static final int outleftButton = 5;
+    public static final int outnormButton = 12;
+    public static final int outleftButton = 10;
     public static final int outrightButton = 6;
-    public static final int eleupButton = 7;
-    public static final int elevdownButton = 8;
+    public static final int eleupButton = 4;
+    public static final int elevdownButton = 5;
     public static final int eleintakeButton = 9;
     public static final int elevel1Button = 10;
     public static final int elevel2Button = 11;
@@ -90,7 +90,7 @@ public final class Constants {
     public static final int elevatorL2 =2;
     public static final int elevatorL3 =3;
     public static final int elevatorL4 =4;
-    
+
 
   }
 

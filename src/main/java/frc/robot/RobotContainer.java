@@ -83,7 +83,7 @@ public class RobotContainer {
             m_robotDrive));
 
     //intake button 
-    new JoystickButton(m_driverController, 4)
+    new JoystickButton(m_driverController, 8)
         .whileTrue(new RunCommand(
              ()-> m_intake.runIntake(),
               m_intake))
@@ -107,20 +107,24 @@ public class RobotContainer {
         ));
 
     //elevato down contol 
-    new JoystickButton(m_driverController, ControllerConstants.elevdownButton)
-        .whileTrue(new RunCommand(
-            ()-> m_elevator.elevatorDown(), m_elevator))
-        .whileFalse(new RunCommand(
-            ()->m_elevator.elevatorStop(),m_elevator
-        ));
-
-
-
-
-
-  }
-
-  /**
+    
+     new JoystickButton(m_driverController,5)
+             .whileTrue(new RunCommand(
+                 ()-> m_elevator.elevatorDown(), m_elevator))
+             .whileFalse(new RunCommand(
+                 ()->m_elevator.elevatorStop(),m_elevator
+             ));
+     
+  
+     
+     
+     
+       }
+     
+       
+     
+     
+     /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
