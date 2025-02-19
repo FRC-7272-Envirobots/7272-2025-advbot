@@ -67,7 +67,7 @@ public final class Constants {
   public static final class ControllerConstants{
 
     public static final int intakeButton = 3;
-    public static final int outnormButton = 12;
+    public static final int outnormButton = 1;
     public static final int outleftButton = 10;
     public static final int outrightButton = 6;
     public static final int eleupButton = 4;
