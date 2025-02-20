@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.Constants.ElevatorConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -34,11 +33,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     Follower right_follower;
     TalonFXConfiguration config;
 
-    public double lfourpos = ElevatorConstants.elevatorL4;
-    public double lthreerpos = ElevatorConstants.elevatorL3;
-    public double ltwopos = ElevatorConstants.elevatorL2;
-    public double lonepos = ElevatorConstants.elevatorL1;
-    public double intakepos = ElevatorConstants.elevatorIntake;
+
 
  
 
@@ -56,7 +51,7 @@ public class ElevatorSubsystem extends SubsystemBase {
          config.Slot0.kA = 0.0015569;
 
 
-         config.MotionMagic.MotionMagicCruiseVelocity = 191; // (12 inches / second) * (1 sprocket rotation / 1.8 inches ) * (90 motor rotations / sprocket rotation) = ~191 motor roations / second.8 inches / 
+         config.MotionMagic.MotionMagicCruiseVelocity = 250; // (12 inches / second) * (1 sprocket rotation / 1.8 inches ) * (90 motor rotations / sprocket rotation) = ~191 motor roations / second.8 inches / 
          config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2; // .5 seconds to reach full speed
          config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10; // spread jerk over .1 second
 
@@ -99,8 +94,22 @@ public class ElevatorSubsystem extends SubsystemBase {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         m_leftelevator.setControl(m_request.withPosition(100));
     }
-
-  
+    public void setElevatorL2() {
+        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        m_leftelevator.setControl(m_request.withPosition(200));
+    }
+    public void setElevatorL0() {
+        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        m_leftelevator.setControl(m_request.withPosition(0));
+    }
+    public void setElevatorL4() {
+        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        m_leftelevator.setControl(m_request.withPosition(420));
+    }
+    public void setElevatorL3() {
+        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        m_leftelevator.setControl(m_request.withPosition(300));
+    }
     public void elevatorUp() {
         m_leftelevator.set(.2);
     }

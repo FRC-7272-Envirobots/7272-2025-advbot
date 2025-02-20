@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.DriveSubsystem;
@@ -83,25 +82,25 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     public void configureButtonBindings() {
-        // new JoystickButton(m_driverController, Button.kR1.value)
-        //         .whileTrue(new RunCommand(
-        //                 () -> m_robotDrive.setX(),
-        //                 m_robotDrive));
+         new JoystickButton(m_psoc,4)
+               .whileTrue(new RunCommand(
+                       () -> m_robotDrive.setX(),
+                        m_robotDrive));
 
-        // // intake button
-        // new JoystickButton(m_driverController, 5)
-        //         .whileTrue(new RunCommand(
-        //                 () -> m_intake.runIntake(),
-        //                 m_intake))
-        //         .whileFalse(new RunCommand(() -> m_intake.stopIntake(), m_intake));
+        // intake button
+         new JoystickButton(m_driverController, XboxController.Button.kB.value)
+                .whileTrue(new RunCommand(
+                 () -> m_intake.runIntake(),
+                         m_intake))
+                 .whileFalse(new RunCommand(() -> m_intake.stopIntake(), m_intake));
 
-        // // outtake button
-        // new JoystickButton(m_driverController, 7)
-        //         .whileTrue(new RunCommand(
-        //                 () -> m_outtake.normalOuttake(),
-        //                 m_outtake))
-        //         .whileFalse(new RunCommand(
-        //                 () -> m_outtake.stopOuttake(), m_outtake));
+         // outtake button
+         new JoystickButton(m_driverController , XboxController.Button.kA.value)
+                 .whileTrue(new RunCommand(
+                         () -> m_outtake.normalOuttake(),
+                       m_outtake))
+                .whileFalse(new RunCommand(
+                         () -> m_outtake.stopOuttake(), m_outtake));
 
         // elevator up control
  
@@ -113,10 +112,17 @@ public class RobotContainer {
         new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
                 .whileTrue(m_elevator.elevatorUpStop());
 
-        new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        new JoystickButton(m_psoc,6)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
+        new JoystickButton(m_psoc,7)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL2(), m_elevator));
+        new JoystickButton(m_psoc,5)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL0(), m_elevator));
+        new JoystickButton(m_psoc,8)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL4(), m_elevator));
+         new JoystickButton(m_psoc,9)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL3(), m_elevator));
 
-        
     //motion magic setup code 
     
         // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)

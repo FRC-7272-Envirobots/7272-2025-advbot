@@ -64,35 +64,6 @@ public final class Constants {
     public static final boolean kGyroReversed = false;
   }
 
-  public static final class ControllerConstants{
-
-    public static final int intakeButton = 3;
-    public static final int outnormButton = 1;
-    public static final int outleftButton = 10;
-    public static final int outrightButton = 6;
-    public static final int eleupButton = 4;
-    public static final int elevdownButton = 5;
-    public static final int eleintakeButton = 9;
-    public static final int elevel1Button = 10;
-    public static final int elevel2Button = 11;
-    public static final int elevel3Button = 12;
-    public static final int elevel4Button = 13;
-    public static final int algaeremoButton = 14;
-
-    
-
-  }
-
-  public static final class ElevatorConstants{
-
-    public static final int elevatorIntake = 0;
-    public static final int elevatorL1 =1;
-    public static final int elevatorL2 =2;
-    public static final int elevatorL3 =3;
-    public static final int elevatorL4 =4;
-
-
-  }
 
   public static final class RobotConstants {
 
