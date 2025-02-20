@@ -25,12 +25,15 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.OuttakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import java.util.List;
+
+import com.ctre.phoenix6.SignalLogger;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -79,52 +82,57 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     public void configureButtonBindings() {
-        new JoystickButton(m_driverController, Button.kR1.value)
-                .whileTrue(new RunCommand(
-                        () -> m_robotDrive.setX(),
-                        m_robotDrive));
+        // new JoystickButton(m_driverController, Button.kR1.value)
+        //         .whileTrue(new RunCommand(
+        //                 () -> m_robotDrive.setX(),
+        //                 m_robotDrive));
 
-        // intake button
-        new JoystickButton(m_driverController, 8)
-                .whileTrue(new RunCommand(
-                        () -> m_intake.runIntake(),
-                        m_intake))
-                .whileFalse(new RunCommand(() -> m_intake.stopIntake(), m_intake));
+        // // intake button
+        // new JoystickButton(m_driverController, 5)
+        //         .whileTrue(new RunCommand(
+        //                 () -> m_intake.runIntake(),
+        //                 m_intake))
+        //         .whileFalse(new RunCommand(() -> m_intake.stopIntake(), m_intake));
 
-        // outtake button
-        new JoystickButton(m_driverController, 7)
-                .whileTrue(new RunCommand(
-                        () -> m_outtake.normalOuttake(),
-                        m_outtake))
-                .whileFalse(new RunCommand(
-                        () -> m_outtake.stopOuttake(), m_outtake));
+        // // outtake button
+        // new JoystickButton(m_driverController, 7)
+        //         .whileTrue(new RunCommand(
+        //                 () -> m_outtake.normalOuttake(),
+        //                 m_outtake))
+        //         .whileFalse(new RunCommand(
+        //                 () -> m_outtake.stopOuttake(), m_outtake));
 
         // elevator up control
-        new JoystickButton(m_driverController, 6)
-                .whileTrue(new RunCommand(
-                        () -> m_elevator.elevatorUp(), m_elevator))
-                .whileFalse(new RunCommand(
-                        () -> m_elevator.elevatorStop(), m_elevator));
+ 
 
-        // elevato down contol
+        new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+                .whileTrue(m_elevator.elevatorDownStop());
+        
 
-        new JoystickButton(m_driverController, 5)
-                .whileTrue(new RunCommand(
-                        () -> m_elevator.elevatorDown(), m_elevator))
-                .whileFalse(new RunCommand(
-                        () -> m_elevator.elevatorStop(), m_elevator));
+        new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+                .whileTrue(m_elevator.elevatorUpStop());
 
         new JoystickButton(m_driverController, XboxController.Button.kA.value)
-                .whileTrue(m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
 
-        new JoystickButton(m_driverController, XboxController.Button.kB.value)
-                .whileTrue(m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        
+    
+        // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        //         .onTrue(Commands.runOnce(() -> { SignalLogger.start(); System.out.println("Logging started clrkio");}));
+        // new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
+        //         .onTrue(Commands.runOnce(() -> { SignalLogger.stop();}));
+        
+        // new JoystickButton(m_driverController, XboxController.Button.kA.value)
+        //         .whileTrue(m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
 
-        new JoystickButton(m_driverController, XboxController.Button.kX.value)
-                .whileTrue(m_elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        // new JoystickButton(m_driverController, XboxController.Button.kB.value)
+        //         .whileTrue(m_elevator.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
 
-        new JoystickButton(m_driverController, XboxController.Button.kY.value)
-                .whileTrue(m_elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        // new JoystickButton(m_driverController, XboxController.Button.kX.value)
+        //         .whileTrue(m_elevator.sysIdDynamic(SysIdRoutine.Direction.kForward));
+
+        // new JoystickButton(m_driverController, XboxController.Button.kY.value)
+        //         .whileTrue(m_elevator.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     }
 
