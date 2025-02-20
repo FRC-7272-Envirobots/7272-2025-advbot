@@ -51,6 +51,7 @@ public class RobotContainer {
     // The driver's controller
     public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
     Joystick m_arcadeBox = new Joystick(1);
+    Joystick m_psoc = new Joystick(2);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -116,6 +117,7 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
 
         
+    //motion magic setup code 
     
         // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
         //         .onTrue(Commands.runOnce(() -> { SignalLogger.start(); System.out.println("Logging started clrkio");}));
