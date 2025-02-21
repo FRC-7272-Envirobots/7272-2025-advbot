@@ -71,9 +71,10 @@ public final class Constants {
     public static final int LeftElevatorCanId = 19;
     public static final int LeftOuttakeCanId = 20;
     public static final int RightOuttakeCanId = 21;
-    public static final int IntakeCanId = 22;
-    public static final int AlgaeRemoverArmCanId = 23;
-    public static final int AlgaeRemoverSpinnerCanID = 24;
+    public static final int IntakelCanId = 22;
+    public static final int IntakerCanId = 23;
+    public static final int AlgaeRemoverArmCanId = 25;
+    public static final int AlgaeRemoverSpinnerCanID = 25;
   }
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
