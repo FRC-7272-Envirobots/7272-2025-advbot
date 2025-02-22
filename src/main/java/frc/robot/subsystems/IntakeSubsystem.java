@@ -10,12 +10,12 @@ import frc.robot.Constants.RobotConstants;
 public class IntakeSubsystem extends SubsystemBase{
 
 
-    TalonFX m_intakel = new TalonFX(RobotConstants.IntakelCanId);
-    TalonFX m_intaker = new TalonFX(RobotConstants.IntakelCanId);
+    SparkMax m_intakel = new SparkMax(RobotConstants.IntakelCanId,MotorType.kBrushless);
+    SparkMax m_intaker = new SparkMax(RobotConstants.IntakerCanId,MotorType.kBrushless);
 
     public void runIntake(){
-        m_intakel.set(.5);
-        m_intaker.set(.5);
+        m_intakel.set(.15);
+        m_intaker.set(-.2);
     }
     public void stopIntake(){
         m_intakel.set(0);

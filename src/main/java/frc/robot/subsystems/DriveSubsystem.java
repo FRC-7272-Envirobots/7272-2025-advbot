@@ -8,6 +8,7 @@ import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -25,11 +26,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -96,7 +99,19 @@ private final Field2d drivefield = new Field2d();
     drivefield.getObject("target pose").setPose(pose));
 
     try{
-      RobotConfig config = RobotConfig.fromGUISettings();
+      RobotConfig config = new RobotConfig(
+        Constants.DriveConstants.MASS_KG,
+        Constants.DriveConstants.MOMENT_OF_INERTIA,
+        new ModuleConfig(
+          Constants.ModuleConstants.kWheelDiameterMeters/2,
+          Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+          Constants.ModuleConstants.WHEEL_COEFFICIENT_OF_FRICTION,
+          DCMotor.getNEO(1),
+          Constants.ModuleConstants.kDrivingMotorReduction,
+          Constants.ModuleConstants.DRIVE_CURRENT_LIMIT,
+          1),
+        Constants.DriveConstants.moduleTranslations);
+
     
         AutoBuilder.configure(
             this::getPose, // Robot pose supplier
@@ -141,12 +156,13 @@ private final Field2d drivefield = new Field2d();
         });
         boolean doRejectUpdate = false;
         LimelightHelpers.SetRobotOrientation("limelight", -m_gyro.getYaw(), 0, 0, 0, 0, 0);
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+
       if(Math.abs(m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
       {
         doRejectUpdate = true;
-      }
-      if(mt2.tagCount == 0)
+      } else if (mt2 == null || mt2.tagCount == 0)
       {
         doRejectUpdate = true;
       }
