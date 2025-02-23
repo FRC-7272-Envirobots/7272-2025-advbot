@@ -15,7 +15,7 @@ public class IntakeSubsystem extends SubsystemBase{
 
     public void runIntake(){
         m_intakel.set(.15);
-        m_intaker.set(-.2);
+        m_intaker.set(-.15);
     }
     public void stopIntake(){
         m_intakel.set(0);

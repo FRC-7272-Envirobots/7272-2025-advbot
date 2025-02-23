@@ -14,6 +14,8 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
@@ -30,10 +32,17 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
+import org.json.simple.parser.ParseException;
+
 import com.ctre.phoenix6.SignalLogger;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.FileVersionException;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -56,9 +65,16 @@ public class RobotContainer {
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
+
+        private final SendableChooser<Command> autoChooser;
+
     public RobotContainer() {
         // Configure the button bindings
         configureButtonBindings();
+
+        autoChooser =  AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
 
         // Configure default commands
         m_robotDrive.setDefaultCommand(
@@ -83,10 +99,10 @@ public class RobotContainer {
      * {@link JoystickButton}.
      */
     public void configureButtonBindings() {
-         new JoystickButton(m_psoc,4)
-               .whileTrue(new RunCommand(
-                       () -> m_robotDrive.setX(),
-                        m_robotDrive));
+        //  new JoystickButton(m_psoc,4)
+        //        .whileTrue(new RunCommand(
+        //                () -> m_robotDrive.setX(),
+        //                 m_robotDrive));
 
         // intake button
          new JoystickButton(m_driverController, XboxController.Button.kB.value)
@@ -113,16 +129,25 @@ public class RobotContainer {
         new JoystickButton(m_driverController, XboxController.Button.kRightBumper.value)
                 .whileTrue(m_elevator.elevatorUpStop());
 
-        new JoystickButton(m_psoc,6)
-                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
-        new JoystickButton(m_psoc,7)
-                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL2(), m_elevator));
-        new JoystickButton(m_psoc,5)
+                
+        new JoystickButton(m_psoc,4)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL0(), m_elevator));
+        new JoystickButton(m_psoc,5)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
+        new JoystickButton(m_psoc,6)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL2(), m_elevator));
+        new JoystickButton(m_psoc,7)
+                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL3(), m_elevator));
         new JoystickButton(m_psoc,8)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL4(), m_elevator));
-         new JoystickButton(m_psoc,9)
-                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL3(), m_elevator));
+
+
+        // new JoystickButton(m_psoc,5)
+        //          .onTrue( new PathPlannerAuto("Example Auto"));
+
+        // new JoystickButton(m_driverController, XboxController.Button.kLeftBumper.value)
+        //         .onTrue(Commands.runOnce(m_robotDrive::zeroHeading));
+        
 
     //motion magic setup code 
     
@@ -150,11 +175,16 @@ public class RobotContainer {
      *
      * @return the command to run in autonomous
      */
+
+    private final Command autoCommand = new PathPlannerAuto("Example Auto");
+
+
+
     public Command getAutonomousCommand() {
+        return autoChooser.getSelected();
 
 
-        // return new PathPlannerAuto("Auto - move back 18");
-        return new PathPlannerAuto("Example Auto");
+        // return autoCommand.andThen(Commands.runOnce(() -> {System.out.println("finished auto");}));
 
 
         // // Create config for trajectory

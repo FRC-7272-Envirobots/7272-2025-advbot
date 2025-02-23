@@ -7,7 +7,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Meters;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -65,7 +70,7 @@ public class DriveSubsystem extends SubsystemBase {
   // Odometry class for tracking robot pose
   SwerveDrivePoseEstimator m_DrivePoseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(m_gyro.getAngle()),
+      Rotation2d.fromDegrees(getGyroYaw()),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
@@ -85,8 +90,26 @@ private final Field2d drivefield = new Field2d();
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 
 
+    LimelightHelpers.setCameraPose_RobotSpace(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME,
+      Constants.VisionConstants.INTAKE_LIMELIGHT_X_OFFSET.in(Meters),
+      Constants.VisionConstants.INTAKE_LIMELIGHT_Y_OFFSET.in(Meters),
+      Constants.VisionConstants.INTAKE_LIMELIGHT_Z_OFFSET.in(Meters),
+      Constants.VisionConstants.INTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees),
+      Constants.VisionConstants.INTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees),
+      Constants.VisionConstants.INTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees)
+    );
+
+    LimelightHelpers.setCameraPose_RobotSpace(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters),
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Meters),
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Meters),
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees),
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees),
+      Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees)
+    );
 
 
+    // LimelightHelpers.setCameraPose_RobotSpace();
     SmartDashboard.putData("Field", drivefield);
     
     PathPlannerLogging.setLogActivePathCallback((poses)->{
@@ -97,7 +120,6 @@ private final Field2d drivefield = new Field2d();
     });
     PathPlannerLogging.setLogTargetPoseCallback((pose)->
     drivefield.getObject("target pose").setPose(pose));
-
     try{
       RobotConfig config = new RobotConfig(
         Constants.DriveConstants.MASS_KG,
@@ -147,37 +169,66 @@ private final Field2d drivefield = new Field2d();
   public void periodic() {
     // Update the odometry in the periodic block
     m_DrivePoseEstimator.update(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
+        Rotation2d.fromDegrees(getGyroYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-        boolean doRejectUpdate = false;
-        LimelightHelpers.SetRobotOrientation("limelight", -m_gyro.getYaw(), 0, 0, 0, 0, 0);
-      // LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-      LimelightHelpers.PoseEstimate mt2 = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        
+  //   System.out.println("outtake robot camera pose settings: \n" +   
+  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters) + " m x\n" + 
+  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Meters) + " m y\n" + 
+  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Meters) + " m z\n" + 
+  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees) + " deg roll \n" + 
+  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees) + " deg pitch\n" + 
+  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees) + " deg yaw"
+  // );
 
-      if(Math.abs(m_gyro.getRate()) > 720) // if our angular velocity is greater than 720 degrees per second, ignore vision updates
-      {
-        doRejectUpdate = true;
-      } else if (mt2 == null || mt2.tagCount == 0)
-      {
-        doRejectUpdate = true;
-      }
-      if(!doRejectUpdate)
-      {
-        // m_DrivePoseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(.7,.7,.7));
-        System.out.println(mt2.pose);
+
+        LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME, getGyroYaw(), 0, 0, 0, 0, 0);
+        LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME, getGyroYaw(), 0, 0, 0, 0, 0);
+
+        LimelightHelpers.PoseEstimate intakePoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME);
+        LimelightHelpers.PoseEstimate outtakePoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
+
+      LimelightHelpers.PoseEstimate bestEstimate = pickBestPoseEstimate(intakePoseEstimate, outtakePoseEstimate);
+
+      if (bestEstimate == null || Math.abs(getGyroYawRate()) > 720) {
+        // skip pose estimate
+      } else {
         m_DrivePoseEstimator.addVisionMeasurement(
-            mt2.pose,
-            mt2.timestampSeconds);
+          bestEstimate.pose,
+          bestEstimate.timestampSeconds);
       }
-
       drivefield.setRobotPose(m_DrivePoseEstimator.getEstimatedPosition());
+  }
 
-     
+  // returns null if no pose estimate should be used, or returns the best pose estimate to use
+  private static LimelightHelpers.PoseEstimate pickBestPoseEstimate(LimelightHelpers.PoseEstimate pose1, LimelightHelpers.PoseEstimate pose2){
+    if ((pose1 == null || pose1.tagCount == 0) && (pose2 == null || pose2.tagCount == 0)){
+      //  System.out.println("Skipping vision estimate because both are null");
+      return null;
+    }
+
+    if (pose1 == null || pose1.tagCount == 0) {
+      //  System.out.println("using outtake camera");
+      return pose2;
+    }
+
+    if (pose2 == null || pose2.tagCount == 0) {
+      //  System.out.println("using intake camera");
+      return pose1;
+    }
+
+    if (pose1.avgTagDist < pose2.avgTagDist) {
+       System.out.println("using intake camera because it is closer");
+      return pose1;
+    } else {
+       System.out.println("using outtake camera because it is closer");
+      return pose2;
+    }
   }
   
 
@@ -197,7 +248,7 @@ private final Field2d drivefield = new Field2d();
    */
   public void resetPose(Pose2d pose) {
     m_DrivePoseEstimator.resetPosition(
-        Rotation2d.fromDegrees(m_gyro.getAngle()),
+        Rotation2d.fromDegrees(getGyroYaw()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -223,7 +274,7 @@ private final Field2d drivefield = new Field2d();
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
     var chassisSpeeds = fieldRelative 
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(m_gyro.getAngle()))
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getGyroYaw()))
         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
     driveChassisSpeeds(chassisSpeeds);
@@ -283,6 +334,7 @@ private final Field2d drivefield = new Field2d();
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
+    m_DrivePoseEstimator.resetRotation(new Rotation2d());
   }
 
   /**
@@ -290,8 +342,8 @@ private final Field2d drivefield = new Field2d();
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getHeading() {
-    return Rotation2d.fromDegrees(m_gyro.getAngle()).getDegrees();
+  public double getGyroYaw() {
+    return Rotation2d.fromDegrees(-m_gyro.getAngle()).getDegrees();
   }
 
   /**
@@ -299,8 +351,8 @@ private final Field2d drivefield = new Field2d();
    *
    * @return The turn rate of the robot, in degrees per second
    */
-  public double getTurnRate() {
-    return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+  public double getGyroYawRate() {
+    return -m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
  
   

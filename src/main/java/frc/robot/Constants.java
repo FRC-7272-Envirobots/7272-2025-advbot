@@ -4,10 +4,20 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degree;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meter;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
+import frc.robot.subsystems.OuttakeSubsystem;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -33,25 +43,25 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+    public static final double kTrackWidth = Units.inchesToMeters(27.0 - (2.0*1.75));
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    public static final double kWheelBase = Units.inchesToMeters(32.0 - (2.0*1.75));
     // Distance between front and back wheels on robot
 
     public static final Translation2d[] moduleTranslations = {
-      new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-      new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-      new Translation2d(-kWheelBase / 2, kTrackWidth / 2),
-      new Translation2d(-kWheelBase / 2, -kTrackWidth / 2)
+      new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
+      new Translation2d(kWheelBase / 2.0, -kTrackWidth / 2.0),
+      new Translation2d(-kWheelBase / 2.0, kTrackWidth / 2.0),
+      new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0)
     };
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(moduleTranslations);
 
     // Angular offsets of the modules relative to the chassis in radians
-    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2;
+    public static final double kFrontLeftChassisAngularOffset = -Math.PI / 2.0;
     public static final double kFrontRightChassisAngularOffset = 0;
     public static final double kBackLeftChassisAngularOffset = Math.PI;
-    public static final double kBackRightChassisAngularOffset = Math.PI / 2;
+    public static final double kBackRightChassisAngularOffset = Math.PI / 2.0;
 
 
     //Falcon CAN IDs 
@@ -84,6 +94,38 @@ public final class Constants {
     public static final int AlgaeRemoverArmCanId = 25;
     public static final int AlgaeRemoverSpinnerCanID = 25;
   }
+
+
+
+  public static final class VisionConstants {
+    // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+    // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14, Inches); // front to back from center
+    // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3, Inches); // left to right from center
+    // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9, Inches);
+    // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0, Degrees);
+    // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45, Degrees);
+    // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0, Degrees);
+    public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
+    public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Inches.of(16); // front to back from center
+    public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Inches.of(2); // left to right from center
+    public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Inches.of(7.5);
+    public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
+    public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(0);
+    public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(0);
+
+    
+    public static final String INTAKE_LIMELIGHT_NAME = "limelight-intake";
+    public static Distance INTAKE_LIMELIGHT_X_OFFSET = Inches.of(-16); // front to back from center
+    public static Distance INTAKE_LIMELIGHT_Y_OFFSET = Inches.of(-.5);
+    public static Distance INTAKE_LIMELIGHT_Z_OFFSET = Inches.of(30);
+    public static Angle INTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
+    public static Angle INTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(0);
+    public static Angle INTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(180);
+    
+
+
+  }
+
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
     // 13T, or 14T. This changes the drive speed of the module (a pinion gear with
@@ -126,5 +168,14 @@ public final class Constants {
 
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
+  }
+
+  public static final class FieldConstants {
+    public static final Pose2d BLUE_REEF_NEARCENTER_LEFT_POLE_POSE = new Pose2d(2.911,4.073, Rotation2d.fromDegrees(0));
+    
+
+
+
+
   }
 }
