@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.PS4Controller.Button;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
+import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -56,6 +57,7 @@ public class RobotContainer {
     private final IntakeSubsystem m_intake = new IntakeSubsystem();
     private final OuttakeSubsystem m_outtake = new OuttakeSubsystem();
     private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
+    private final AlgaeSubsystem m_algae  = new AlgaeSubsystem();
 
     // The driver's controller
     public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -104,6 +106,12 @@ public class RobotContainer {
         //                () -> m_robotDrive.setX(),
         //                 m_robotDrive));
 
+        //CONTROLLER BUTTONS 
+
+        // Algae buttons 
+       
+       
+
         // intake button
          new JoystickButton(m_driverController, XboxController.Button.kB.value)
                 .whileTrue(new RunCommand(
@@ -119,6 +127,9 @@ public class RobotContainer {
                 .whileFalse(new RunCommand(
                          () -> m_outtake.stopOuttake(), m_outtake));
 
+
+        //BUTTON BOARD BUTTONS 
+                         
         // elevator up control
  
 

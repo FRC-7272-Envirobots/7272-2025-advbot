@@ -91,8 +91,10 @@ public final class Constants {
     public static final int RightOuttakeCanId = 21;
     public static final int IntakelCanId = 22;
     public static final int IntakerCanId = 23;
-    public static final int AlgaeRemoverArmCanId = 25;
+    public static final int AlgaeRemoverArmCanId = 24;
     public static final int AlgaeRemoverSpinnerCanID = 25;
+    public static final int ClimberCanId = 26;
+
   }
 
 
