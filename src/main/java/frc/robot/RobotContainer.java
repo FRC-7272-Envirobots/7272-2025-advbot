@@ -22,6 +22,7 @@ import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.AlgaeSubsystem;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -58,7 +59,7 @@ public class RobotContainer {
     private final OuttakeSubsystem m_outtake = new OuttakeSubsystem();
     private final ElevatorSubsystem m_elevator = new ElevatorSubsystem();
     private final AlgaeSubsystem m_algae  = new AlgaeSubsystem();
-
+    private final Climber m_climber = new Climber();
     // The driver's controller
     public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
     Joystick m_arcadeBox = new Joystick(1);
@@ -141,18 +142,26 @@ public class RobotContainer {
                 .whileTrue(m_elevator.elevatorUpStop());
 
                 
-        new JoystickButton(m_psoc,4)
+        new JoystickButton(m_psoc,1)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL0(), m_elevator));
-        new JoystickButton(m_psoc,5)
-                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
-        new JoystickButton(m_psoc,6)
+       // new JoystickButton(m_psoc,)
+        //        .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
+        new JoystickButton(m_psoc,2)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL2(), m_elevator));
-        new JoystickButton(m_psoc,7)
+        new JoystickButton(m_psoc,3)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL3(), m_elevator));
-        new JoystickButton(m_psoc,8)
+        new JoystickButton(m_psoc,4)
                 .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL4(), m_elevator));
 
+        new JoystickButton(m_psoc,5)
+                .onTrue(Commands.runOnce(()-> m_algae.algaeup(),m_algae));
+        new JoystickButton(m_psoc, 6)
+                .onTrue(Commands.runOnce(()-> m_algae.algaedown(),m_algae));
+        new JoystickButton(m_psoc,9)
+                .onTrue(Commands.startRun(()-> m_climber.climb(),()->m_climber.climbStop(),m_climber));
+                
 
+        
         // new JoystickButton(m_psoc,5)
         //          .onTrue( new PathPlannerAuto("Example Auto"));
 

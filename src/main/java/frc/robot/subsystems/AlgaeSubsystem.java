@@ -1,13 +1,9 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.AlternateEncoderConfig;
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -65,10 +61,10 @@ public class AlgaeSubsystem extends SubsystemBase {
     
   }
   public void algaedown(){
-    if (m_armEncoder.getPosition()>(10)){
+    if (m_armEncoder.getPosition()>5){
       m_algaearm.set(-.6);
     }
-    if (m_armEncoder.getPosition()<=10){
+    if (m_armEncoder.getPosition()<=5){
       m_algaearm.set(0);
     }
   }
