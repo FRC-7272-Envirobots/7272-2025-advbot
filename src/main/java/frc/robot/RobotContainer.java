@@ -116,9 +116,15 @@ public class RobotContainer {
         // intake button
          new JoystickButton(m_driverController, XboxController.Button.kB.value)
                 .whileTrue(new RunCommand(
-                 () -> m_intake.runIntake(),
-                         m_intake))
-                 .whileFalse(new RunCommand(() -> m_intake.stopIntake(), m_intake));
+                 () -> m_algae.algaeRaise(),
+                         m_algae))
+                 .whileFalse(new RunCommand( ()-> m_algae.armstop(), m_algae));
+
+         new JoystickButton(m_driverController, XboxController.Button.kY.value)
+                 .whileTrue(new RunCommand(
+                  () -> m_algae.aglgaeLower(),
+                          m_algae))
+                  .whileFalse(new RunCommand( ()-> m_algae.armstop(), m_algae));
 
          // outtake button
          new JoystickButton(m_driverController , XboxController.Button.kA.value)
@@ -128,7 +134,7 @@ public class RobotContainer {
                 .whileFalse(new RunCommand(
                          () -> m_outtake.stopOuttake(), m_outtake));
 
-
+       
         //BUTTON BOARD BUTTONS 
                          
         // elevator up control
@@ -157,8 +163,7 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(()-> m_algae.algaeup(),m_algae));
         new JoystickButton(m_psoc, 6)
                 .onTrue(Commands.runOnce(()-> m_algae.algaedown(),m_algae));
-        new JoystickButton(m_psoc,9)
-                .onTrue(Commands.startRun(()-> m_climber.climb(),()->m_climber.climbStop(),m_climber));
+        
                 
 
         
