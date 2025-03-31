@@ -9,6 +9,15 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meter;
 
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+
+import javax.print.attribute.standard.Destination;
+
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+import com.pathplanner.lib.path.PathConstraints;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -35,6 +44,8 @@ public final class Constants {
     public static final double MASS_KG = 31;
     public static final double MOMENT_OF_INERTIA = 6.883;
 
+    public static final double DRIVE_LIMITER = 2;
+    public static final double ELEVATOR_LIMITER = 16;
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -42,16 +53,16 @@ public final class Constants {
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(27.0 - (2.0*1.75));
+    public static final double kTrackWidth = Units.inchesToMeters(27.0 - (2.0 * 1.75));
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(32.0 - (2.0*1.75));
+    public static final double kWheelBase = Units.inchesToMeters(32.0 - (2.0 * 1.75));
     // Distance between front and back wheels on robot
 
     public static final Translation2d[] moduleTranslations = {
-      new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
-      new Translation2d(kWheelBase / 2.0, -kTrackWidth / 2.0),
-      new Translation2d(-kWheelBase / 2.0, kTrackWidth / 2.0),
-      new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0)
+        new Translation2d(kWheelBase / 2.0, kTrackWidth / 2.0),
+        new Translation2d(kWheelBase / 2.0, -kTrackWidth / 2.0),
+        new Translation2d(-kWheelBase / 2.0, kTrackWidth / 2.0),
+        new Translation2d(-kWheelBase / 2.0, -kTrackWidth / 2.0)
     };
 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(moduleTranslations);
@@ -62,10 +73,8 @@ public final class Constants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2.0;
 
-
-    //Falcon CAN IDs 
-    //RN MOSTLY JUST PLACE HOLDERS 
-  
+    // Falcon CAN IDs
+    // RN MOSTLY JUST PLACE HOLDERS
 
     // SPARK MAX CAN IDs
     public static final int kFrontLeftDrivingCanId = 11;
@@ -81,14 +90,13 @@ public final class Constants {
     public static final boolean kGyroReversed = false;
   }
 
-
   public static final class RobotConstants {
 
     public static final int RightElevartorCanId = 18;
     public static final int LeftElevatorCanId = 19;
     public static final int LeftOuttakeCanId = 20;
     public static final int RightOuttakeCanId = 21;
-    public static final int IntakelCanId = 22;
+
     public static final int IntakerCanId = 23;
     public static final int AlgaeRemoverArmCanId = 24;
     public static final int AlgaeRemoverSpinnerCanID = 25;
@@ -96,16 +104,20 @@ public final class Constants {
 
   }
 
-
-
   public static final class VisionConstants {
     // public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
-    // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14, Inches); // front to back from center
-    // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3, Inches); // left to right from center
-    // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9, Inches);
-    // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0, Degrees);
-    // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45, Degrees);
-    // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0, Degrees);
+    // public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Distance.ofBaseUnits(14,
+    // Inches); // front to back from center
+    // public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Distance.ofBaseUnits(3,
+    // Inches); // left to right from center
+    // public static Distance OUTTAKE_LIMELIGHT_Z_OFFSET = Distance.ofBaseUnits(9,
+    // Inches);
+    // public static Angle OUTTAKE_LIMELIGHT_ROLL_ANGLE = Angle.ofBaseUnits(0,
+    // Degrees);
+    // public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Angle.ofBaseUnits(-45,
+    // Degrees);
+    // public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Angle.ofBaseUnits(0,
+    // Degrees);
     public static final String OUTTAKE_LIMELIGHT_NAME = "limelight-outtake";
     public static Distance OUTTAKE_LIMELIGHT_X_OFFSET = Inches.of(16); // front to back from center
     public static Distance OUTTAKE_LIMELIGHT_Y_OFFSET = Inches.of(2); // left to right from center
@@ -114,7 +126,6 @@ public final class Constants {
     public static Angle OUTTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(0);
     public static Angle OUTTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(0);
 
-    
     public static final String INTAKE_LIMELIGHT_NAME = "limelight-intake";
     public static Distance INTAKE_LIMELIGHT_X_OFFSET = Inches.of(-16); // front to back from center
     public static Distance INTAKE_LIMELIGHT_Y_OFFSET = Inches.of(-.5);
@@ -122,8 +133,6 @@ public final class Constants {
     public static Angle INTAKE_LIMELIGHT_ROLL_ANGLE = Degrees.of(0);
     public static Angle INTAKE_LIMELIGHT_PITCH_ANGLE = Degrees.of(0);
     public static Angle INTAKE_LIMELIGHT_YAW_ANGLE = Degrees.of(180);
-    
-
 
   }
 
@@ -165,6 +174,17 @@ public final class Constants {
     // Constraint for the motion profiled robot angle controller
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
+
+    public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
+        Map.entry(AutoDestination.REEF_12_LEFT, new Pose2d(6.059, 4.305, Rotation2d.fromDegrees(-84.685))),
+        Map.entry(AutoDestination.REEF_6_RIGHT, new Pose2d(2.888, 3.723, Rotation2d.fromDegrees(149.172))),
+        Map.entry(AutoDestination.REEF_12_RIGHT, new Pose2d()),
+        Map.entry(AutoDestination.REEF_8_LEFT, new Pose2d(3.746, 5.409, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_8_RIGHT, new Pose2d(3.514, 5.260, Rotation2d.fromDegrees(-98.248)))
+
+    );
+    public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, .5 * Math.PI, 1 * Math.PI);
+
   }
 
   public static final class NeoMotorConstants {
@@ -172,11 +192,8 @@ public final class Constants {
   }
 
   public static final class FieldConstants {
-    public static final Pose2d BLUE_REEF_NEARCENTER_LEFT_POLE_POSE = new Pose2d(2.911,4.073, Rotation2d.fromDegrees(0));
-    
-
-
-
+    public static final Pose2d BLUE_REEF_NEARCENTER_LEFT_POLE_POSE = new Pose2d(2.911, 4.073,
+        Rotation2d.fromDegrees(0));
 
   }
 }

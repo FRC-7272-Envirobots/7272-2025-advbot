@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.RobotConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -33,27 +34,29 @@ public class ElevatorSubsystem extends SubsystemBase {
     Follower right_follower;
     TalonFXConfiguration config;
 
-
-
- 
-
     public ElevatorSubsystem() {
         right_follower = new Follower(m_leftelevator.getDeviceID(), false);
         m_rightelevator.setControl(right_follower);
 
         // Arm motion logic
         config = new TalonFXConfiguration();
-         config.Slot0.kP = 0.1;
-        //"Nobody uses I" apparently, so dont set it.
-         config.Slot0.kD = 0.0087045;
-         config.Slot0.kS = 0.034662;
-         config.Slot0.kV = 0.10919;
-         config.Slot0.kA = 0.0015569;
+        config.Slot0.kP = 0.1;
+        // "Nobody uses I" apparently, so dont set it.
+        config.Slot0.kD = 0.0087045;
+        config.Slot0.kS = 0.034662;
+        config.Slot0.kV = 0.10919;
+        config.Slot0.kA = 0.0015569;
 
-
-         config.MotionMagic.MotionMagicCruiseVelocity = 250; // (12 inches / second) * (1 sprocket rotation / 1.8 inches ) * (90 motor rotations / sprocket rotation) = ~191 motor roations / second.8 inches / 
-         config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2; // .5 seconds to reach full speed
-         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10; // spread jerk over .1 second
+        config.MotionMagic.MotionMagicCruiseVelocity = 550;// changed from 250 (12 inches / second) * (1 sprocket
+                                                           // rotation / 1.8 inches
+                                                           // ) * (90 motor rotations / sprocket rotation) = ~191 motor
+                                                           // roations / second.8 inches /
+        config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2 * 2; // .5 seconds
+                                                                                                           // to
+                                                                                                           // reach full
+                                                                                                           // speed
+        config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10 * 2; // spread jerk over .1
+                                                                                                  // second
 
         // Limit Switch
         config.HardwareLimitSwitch.ReverseLimitEnable = true;
@@ -88,51 +91,60 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     // basic elevator commands
- 
-        
+
     public void setElevatorL1() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         m_leftelevator.setControl(m_request.withPosition(100));
     }
+
     public void setElevatorL2() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         m_leftelevator.setControl(m_request.withPosition(200));
     }
+
     public void setElevatorL0() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         m_leftelevator.setControl(m_request.withPosition(0));
     }
+
     public void setElevatorL4() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        m_leftelevator.setControl(m_request.withPosition(420));
+        m_leftelevator.setControl(m_request.withPosition(450));
     }
+
     public void setElevatorL3() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         m_leftelevator.setControl(m_request.withPosition(300));
     }
+
     public void elevatorUp() {
-        m_leftelevator.set(.2);
+        m_leftelevator.set(.2 * DriveConstants.ELEVATOR_LIMITER);
     }
 
     public void elevatorDown() {
-        m_leftelevator.set(-.2);
+        m_leftelevator.set(-.2 * DriveConstants.ELEVATOR_LIMITER);
 
     }
 
-    
     public void elevatorStop() {
         m_leftelevator.set(0);
     }
 
     public Command elevatorUpStop() {
-        return Commands.startEnd(() -> {this.elevatorUp();}, () -> {this.elevatorStop();}, this);
+        return Commands.startEnd(() -> {
+            this.elevatorUp();
+        }, () -> {
+            this.elevatorStop();
+        }, this);
     }
-
 
     public Command elevatorDownStop() {
-        return Commands.startEnd(() -> {this.elevatorDown();}, () -> {this.elevatorStop();}, this);
+        return Commands.startEnd(() -> {
+            this.elevatorDown();
+        }, () -> {
+            this.elevatorStop();
+        }, this);
     }
-
 
     private final VoltageOut m_sysidControl = new VoltageOut(0);
     private SysIdRoutine m_SysIdRoutine = new SysIdRoutine(
@@ -155,7 +167,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param direction The direction (forward or reverse) to run the test in
      */
     public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
-        //SignalLogger.start();
+        // SignalLogger.start();
 
         return m_SysIdRoutine.quasistatic(direction);
         // SignalLogger.stop();
@@ -167,7 +179,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param direction The direction (forward or reverse) to run the test in
      */
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
-        //SignalLogger.start();
+        // SignalLogger.start();
 
         return m_SysIdRoutine.dynamic(direction);
         // SignalLogger.stop();

@@ -7,21 +7,25 @@ package frc.robot.subsystems;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 
-import static edu.wpi.first.units.Units.Degree;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Meters;
+import java.util.List;
+
+import javax.print.attribute.standard.Destination;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -36,11 +40,17 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.AutoDestination;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
+import frc.robot.LimelightHelpers.LimelightTarget_Fiducial;
+import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.LimelightHelpers.RawFiducial;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 
 public class DriveSubsystem extends SubsystemBase {
   // Create MAXSwerveModules
@@ -65,100 +75,85 @@ public class DriveSubsystem extends SubsystemBase {
       DriveConstants.kBackRightChassisAngularOffset);
 
   // The gyro sensor
-    public final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
-
+  public final AHRS m_gyro = new AHRS(NavXComType.kMXP_SPI);
   // Odometry class for tracking robot pose
   SwerveDrivePoseEstimator m_DrivePoseEstimator = new SwerveDrivePoseEstimator(
       DriveConstants.kDriveKinematics,
-      Rotation2d.fromDegrees(getGyroYaw()),
+      Rotation2d.fromDegrees(getGyroHeading()),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
-          m_rearRight.getPosition()},
-          Pose2d.kZero,
-          VecBuilder.fill(0.05, 0.05, .05),
-          VecBuilder.fill(0.5, 0.5, .5));
+          m_rearRight.getPosition() },
+      Pose2d.kZero,
+      VecBuilder.fill(0.05, 0.05, .05),
+      VecBuilder.fill(0.5, 0.5, .5));
 
-       
-private final Field2d drivefield = new Field2d();
-
+  private final Field2d drivefield = new Field2d();
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
     // Usage reporting for MAXSwerve template
     HAL.report(tResourceType.kResourceType_RobotDrive, tInstances.kRobotDriveSwerve_MaxSwerve);
 
+    // double robotYaw = -m_gyro.getYaw();
+    // LimelightHelpers.SetRobotOrientation("", robotYaw, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-    LimelightHelpers.setCameraPose_RobotSpace(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME,
-      Constants.VisionConstants.INTAKE_LIMELIGHT_X_OFFSET.in(Meters),
-      Constants.VisionConstants.INTAKE_LIMELIGHT_Y_OFFSET.in(Meters),
-      Constants.VisionConstants.INTAKE_LIMELIGHT_Z_OFFSET.in(Meters),
-      Constants.VisionConstants.INTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees),
-      Constants.VisionConstants.INTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees),
-      Constants.VisionConstants.INTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees)
-    );
-
-    LimelightHelpers.setCameraPose_RobotSpace(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME,
-      Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters),
-      Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Meters),
-      Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Meters),
-      Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees),
-      Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees),
-      Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees)
-    );
-
-
-    // LimelightHelpers.setCameraPose_RobotSpace();
     SmartDashboard.putData("Field", drivefield);
-    
-    PathPlannerLogging.setLogActivePathCallback((poses)->{
+
+    PathPlannerLogging.setLogActivePathCallback((poses) -> {
       drivefield.getObject("path").setPoses(poses);
     });
-    PathPlannerLogging.setLogCurrentPoseCallback((pose)->{
+    PathPlannerLogging.setLogCurrentPoseCallback((pose) -> {
       drivefield.setRobotPose(pose);
     });
-    PathPlannerLogging.setLogTargetPoseCallback((pose)->
-    drivefield.getObject("target pose").setPose(pose));
-    try{
+    PathPlannerLogging.setLogTargetPoseCallback((pose) -> drivefield.getObject("target pose").setPose(pose));
+
+    try {
       RobotConfig config = new RobotConfig(
-        Constants.DriveConstants.MASS_KG,
-        Constants.DriveConstants.MOMENT_OF_INERTIA,
-        new ModuleConfig(
-          Constants.ModuleConstants.kWheelDiameterMeters/2,
-          Constants.DriveConstants.kMaxSpeedMetersPerSecond,
-          Constants.ModuleConstants.WHEEL_COEFFICIENT_OF_FRICTION,
-          DCMotor.getNEO(1),
-          Constants.ModuleConstants.kDrivingMotorReduction,
-          Constants.ModuleConstants.DRIVE_CURRENT_LIMIT,
-          1),
-        Constants.DriveConstants.moduleTranslations);
+          Constants.DriveConstants.MASS_KG,
+          Constants.DriveConstants.MOMENT_OF_INERTIA,
+          new ModuleConfig(
+              Constants.ModuleConstants.kWheelDiameterMeters / 2,
+              Constants.DriveConstants.kMaxSpeedMetersPerSecond,
+              Constants.ModuleConstants.WHEEL_COEFFICIENT_OF_FRICTION,
+              DCMotor.getNEO(1),
+              Constants.ModuleConstants.kDrivingMotorReduction,
+              Constants.ModuleConstants.DRIVE_CURRENT_LIMIT,
+              1),
+          Constants.DriveConstants.moduleTranslations);
 
-    
-        AutoBuilder.configure(
-            this::getPose, // Robot pose supplier
-            this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
-            this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-            (speeds, feedforwards) -> driveChassisSpeeds(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-            new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
-            ),
-            config, // The robot configuration
-            () -> {
-              // Boolean supplier that controls when the path will be mirrored for the red alliance
-              // This will flip the path being followed to the red side of the field.
-              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+      AutoBuilder.configure(
+          this::getPose, // Robot pose supplier
+          this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
+          this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+          (speeds, feedforwards) -> driveChassisSpeeds(speeds), // Method that will drive the robot given ROBOT RELATIVE
+                                                                // ChassisSpeeds. Also optionally outputs individual
+                                                                // module feedforwards
+          new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
+                                          // holonomic drive trains
+              new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+              new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+          ),
+          config, // The robot configuration
+          () -> {
+            // Boolean supplier that controls when the path will be mirrored for the red
+            // alliance
+            // This will flip the path being followed to the red side of the field.
+            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-              var alliance = DriverStation.getAlliance();
-              if (alliance.isPresent()) {
-                return alliance.get() == DriverStation.Alliance.Red;
-              }
-              return false;
-            },
-            this // Reference to this subsystem to set requirements
-    );
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+          },
+          this // Reference to this subsystem to set requirements
+      );
+      System.out.println("configured AutoBuilder");
     } catch (Exception e) {
+      System.out.println("AUTOBUILDER FAILED");
+
       // Handle exception as needed
       e.printStackTrace();
     }
@@ -169,68 +164,101 @@ private final Field2d drivefield = new Field2d();
   public void periodic() {
     // Update the odometry in the periodic block
     m_DrivePoseEstimator.update(
-        Rotation2d.fromDegrees(getGyroYaw()),
+        Rotation2d.fromDegrees(getGyroHeading()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-        
-  //   System.out.println("outtake robot camera pose settings: \n" +   
-  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters) + " m x\n" + 
-  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Meters) + " m y\n" + 
-  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Meters) + " m z\n" + 
-  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees) + " deg roll \n" + 
-  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees) + " deg pitch\n" + 
-  //   Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees) + " deg yaw"
-  // );
+    boolean doRejectUpdate = false;
 
+    // System.out.println("outtake robot camera pose settings: \n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters) + " m x\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_Y_OFFSET.in(Meters) + " m y\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_Z_OFFSET.in(Meters) + " m z\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_ROLL_ANGLE.in(Degrees) + " deg
+    // roll \n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_PITCH_ANGLE.in(Degrees) + " deg
+    // pitch\n" +
+    // Constants.VisionConstants.OUTTAKE_LIMELIGHT_YAW_ANGLE.in(Degrees) + " deg
+    // yaw"
+    // );
 
-        LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME, getGyroYaw(), 0, 0, 0, 0, 0);
-        LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME, getGyroYaw(), 0, 0, 0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME, getEstimatedHeading(), 0, 0,
+        0, 0, 0);
+    LimelightHelpers.SetRobotOrientation(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME, getEstimatedHeading(), 0, 0,
+        0, 0, 0);
 
-        LimelightHelpers.PoseEstimate intakePoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME);
-        LimelightHelpers.PoseEstimate outtakePoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
+    LimelightHelpers.PoseEstimate intakePoseEstimate = LimelightHelpers
+        .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.INTAKE_LIMELIGHT_NAME);
+    LimelightHelpers.PoseEstimate outtakePoseEstimate = LimelightHelpers
+        .getBotPoseEstimate_wpiBlue(Constants.VisionConstants.OUTTAKE_LIMELIGHT_NAME);
 
-      LimelightHelpers.PoseEstimate bestEstimate = pickBestPoseEstimate(intakePoseEstimate, outtakePoseEstimate);
+    LimelightHelpers.PoseEstimate bestEstimate = pickBestPoseEstimate(filterPoseEstimate(intakePoseEstimate),
+        (filterPoseEstimate(outtakePoseEstimate)));
 
-      if (bestEstimate == null || Math.abs(getGyroYawRate()) > 720) {
-        // skip pose estimate
-      } else {
-        m_DrivePoseEstimator.addVisionMeasurement(
+    if (bestEstimate == null || Math.abs(getGyroYawRate()) > 720) {
+      // skip pose estimate
+    } else {
+      m_DrivePoseEstimator.addVisionMeasurement(
           bestEstimate.pose,
           bestEstimate.timestampSeconds);
-      }
-      drivefield.setRobotPose(m_DrivePoseEstimator.getEstimatedPosition());
+    }
+    drivefield.setRobotPose(m_DrivePoseEstimator.getEstimatedPosition());
+
   }
 
-  // returns null if no pose estimate should be used, or returns the best pose estimate to use
-  private static LimelightHelpers.PoseEstimate pickBestPoseEstimate(LimelightHelpers.PoseEstimate pose1, LimelightHelpers.PoseEstimate pose2){
-    if ((pose1 == null || pose1.tagCount == 0) && (pose2 == null || pose2.tagCount == 0)){
-      //  System.out.println("Skipping vision estimate because both are null");
+  private static LimelightHelpers.PoseEstimate filterPoseEstimate(LimelightHelpers.PoseEstimate pose) {
+
+    if (pose == null) {
+      return null;
+    }
+    if (pose.tagCount == 0) {
+      return null;
+    } else {
+      boolean hastagcloseenough = false;
+      for (RawFiducial tag : pose.rawFiducials) {
+        // .println(tag.distToRobot)System.out;
+        if (tag.distToRobot < 3.48) {
+          hastagcloseenough = true;
+        }
+      }
+      if (!hastagcloseenough) {
+        return null;
+      }
+    }
+
+    return pose;
+  }
+
+  // returns null if no pose estimate should be used, or returns the best pose
+  // estimate to use
+  private static LimelightHelpers.PoseEstimate pickBestPoseEstimate(LimelightHelpers.PoseEstimate pose1,
+      LimelightHelpers.PoseEstimate pose2) {
+    if ((pose1 == null || pose1.tagCount == 0) && (pose2 == null || pose2.tagCount == 0)) {
+      // System.out.println("Skipping vision estimate because both are null");
       return null;
     }
 
     if (pose1 == null || pose1.tagCount == 0) {
-      //  System.out.println("using outtake camera");
+      // System.out.println("using outtake camera");
       return pose2;
     }
 
     if (pose2 == null || pose2.tagCount == 0) {
-      //  System.out.println("using intake camera");
+      // System.out.println("using intake camera");
       return pose1;
     }
 
     if (pose1.avgTagDist < pose2.avgTagDist) {
-       System.out.println("using intake camera because it is closer");
+      System.out.println("using intake camera because it is closer");
       return pose1;
     } else {
-       System.out.println("using outtake camera because it is closer");
+      System.out.println("using outtake camera because it is closer");
       return pose2;
     }
   }
-  
 
   /**
    * Returns the currently-estimated pose of the robot.
@@ -248,7 +276,7 @@ private final Field2d drivefield = new Field2d();
    */
   public void resetPose(Pose2d pose) {
     m_DrivePoseEstimator.resetPosition(
-        Rotation2d.fromDegrees(getGyroYaw()),
+        Rotation2d.fromDegrees(getGyroHeading()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -257,7 +285,7 @@ private final Field2d drivefield = new Field2d();
         },
         pose);
   }
-  
+
   /**
    * Method to drive the robot using joystick info.
    *
@@ -269,19 +297,21 @@ private final Field2d drivefield = new Field2d();
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
     // Convert the commanded speeds into the correct units for the drivetrain
-    double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond;
-    double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond;
+    double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond * DriveConstants.DRIVE_LIMITER;
+    double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond * DriveConstants.DRIVE_LIMITER;
     double rotDelivered = rot * DriveConstants.kMaxAngularSpeed;
 
-    var chassisSpeeds = fieldRelative 
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(getGyroYaw()))
+    var chassisSpeeds = fieldRelative
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
+            Rotation2d.fromDegrees(getEstimatedHeading()))
         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered);
 
     driveChassisSpeeds(chassisSpeeds);
 
   }
 
-  public void driveChassisSpeeds(ChassisSpeeds chassisSpeeds){
+  public void driveChassisSpeeds(ChassisSpeeds chassisSpeeds) {
+    // System.out.println(chassisSpeeds);
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -290,13 +320,14 @@ private final Field2d drivefield = new Field2d();
     m_rearLeft.setDesiredState(swerveModuleStates[2]);
     m_rearRight.setDesiredState(swerveModuleStates[3]);
   }
-  public ChassisSpeeds getChassisSpeeds(){
-   
+
+  public ChassisSpeeds getChassisSpeeds() {
+
     return DriveConstants.kDriveKinematics.toChassisSpeeds(
-    m_frontLeft.getState(),
-    m_frontRight.getState(),
-    m_rearLeft.getState(),
-    m_rearRight.getState());
+        m_frontLeft.getState(),
+        m_frontRight.getState(),
+        m_rearLeft.getState(),
+        m_rearRight.getState());
   }
 
   /**
@@ -334,7 +365,7 @@ private final Field2d drivefield = new Field2d();
   /** Zeroes the heading of the robot. */
   public void zeroHeading() {
     m_gyro.reset();
-    m_DrivePoseEstimator.resetRotation(new Rotation2d());
+    System.out.println("gyro reset");
   }
 
   /**
@@ -342,8 +373,8 @@ private final Field2d drivefield = new Field2d();
    *
    * @return the robot's heading in degrees, from -180 to 180
    */
-  public double getGyroYaw() {
-    return Rotation2d.fromDegrees(-m_gyro.getAngle()).getDegrees();
+  public double getGyroHeading() {
+    return Rotation2d.fromDegrees(m_gyro.getAngle() * -1).getDegrees();
   }
 
   /**
@@ -352,8 +383,43 @@ private final Field2d drivefield = new Field2d();
    * @return The turn rate of the robot, in degrees per second
    */
   public double getGyroYawRate() {
-    return -m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
+    return m_gyro.getRate() * (DriveConstants.kGyroReversed ? -1.0 : 1.0);
   }
- 
-  
+
+  public double getEstimatedHeading() {
+    return m_DrivePoseEstimator.getEstimatedPosition().getRotation().getDegrees();
+  }
+
+  List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
+      new Pose2d(1.0, 1.0, Rotation2d.fromDegrees(0)),
+      new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
+      new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90)));
+
+  // public PathConstraints(double maxVelocityMPS, double maxAccelerationMPSSq,
+  // double maxAngularVelocityRadPerSec, double maxAngularAccelerationRadPerSecSq)
+  // {
+  // this(maxVelocityMPS, maxAccelerationMPSSq, maxAngularVelocityRadPerSec,
+  // maxAngularAccelerationRadPerSecSq, 12.0, false);
+  public Command driveTo(AutoDestination autoDriveto) {
+
+    System.out.println("starting driveTo");
+
+    /*
+     * PathPlannerPath path = new PathPlannerPath(
+     * waypoints,
+     * constraints,
+     * null, // The ideal starting state, this is only relevant for pre-planned
+     * paths, so can be null for on-the-fly paths.
+     * new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can
+     * set a holonomic rotation here. If using a differential drivetrain, the
+     * rotation will have no effect.
+     * );
+     * return ;
+     */
+    Pose2d chosen_auto = AutoConstants.Auto_Map.get(autoDriveto);
+    System.out.println(chosen_auto);
+    return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+
+  }
+
 }
