@@ -26,6 +26,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import frc.robot.subsystems.DriveSubsystem;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -45,7 +46,7 @@ public final class Constants {
     public static final double MOMENT_OF_INERTIA = 6.883;
 
     public static final double DRIVE_LIMITER = 2;
-    public static final double ELEVATOR_LIMITER = 16;
+    public static final double ELEVATOR_LIMITER = 60;
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
@@ -175,12 +176,44 @@ public final class Constants {
     public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared);
 
-    public static final Map<AutoDestination, Pose2d> Auto_Map = Map.ofEntries(
+    public static final Map<AutoDestination, Pose2d> blueAuto_Map = Map.ofEntries(
         Map.entry(AutoDestination.REEF_12_LEFT, new Pose2d(6.059, 4.305, Rotation2d.fromDegrees(-84.685))),
+        Map.entry(AutoDestination.REEF_12_RIGHT, new Pose2d(6.059, 4.305, Rotation2d.fromDegrees(-85.685))),
+        Map.entry(AutoDestination.REEF_2_LEFT, new Pose2d(5.208, 2.641, Rotation2d.fromDegrees(-133.764))),
+        Map.entry(AutoDestination.REEF_2_RIGHT, new Pose2d(5.492, 2.798, Rotation2d.fromDegrees(-133.764))),
+        Map.entry(AutoDestination.REEF_4_LEFT, new Pose2d(3.769, 2.596, Rotation2d.fromDegrees(149.172))),
+        Map.entry(AutoDestination.REEF_4_RIGHT, new Pose2d(3.999, 2.492, Rotation2d.fromDegrees(156.508))),
+        Map.entry(AutoDestination.REEF_6_LEFT, new Pose2d(2.910, 4.066, Rotation2d.fromDegrees(-98.248))),
         Map.entry(AutoDestination.REEF_6_RIGHT, new Pose2d(2.888, 3.723, Rotation2d.fromDegrees(149.172))),
-        Map.entry(AutoDestination.REEF_12_RIGHT, new Pose2d()),
         Map.entry(AutoDestination.REEF_8_LEFT, new Pose2d(3.746, 5.409, Rotation2d.fromDegrees(-98.248))),
-        Map.entry(AutoDestination.REEF_8_RIGHT, new Pose2d(3.514, 5.260, Rotation2d.fromDegrees(-98.248)))
+        Map.entry(AutoDestination.REEF_8_RIGHT, new Pose2d(3.514, 5.260, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_10_LEFT, new Pose2d(5.328, 5.349, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.REEF_10_RIGHT, new Pose2d(5.067, 5.521, Rotation2d.fromDegrees(-117.440))),
+
+        Map.entry(AutoDestination.CORAL_LEFT_1, new Pose2d(1.492, 7.327, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.CORAL_LEFT_2, new Pose2d(0.821, 6.842, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.CORAL_RIGHT_1, new Pose2d(0.798, 1.208, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.CORAL_RIGHT_2, new Pose2d(1.604, 0.611, Rotation2d.fromDegrees(-117.440)))
+
+    );
+    public static final Map<AutoDestination, Pose2d> RedAuto_Map = Map.ofEntries(
+        Map.entry(AutoDestination.REEF_12_LEFT, new Pose2d(11.495, 4.010, Rotation2d.fromDegrees(-98.258))),
+        Map.entry(AutoDestination.REEF_12_RIGHT, new Pose2d(11.480, 3.640, Rotation2d.fromDegrees(-98.258))),
+        Map.entry(AutoDestination.REEF_2_LEFT, new Pose2d(12.384, 5.478, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.REEF_2_RIGHT, new Pose2d(10.079, 1.135, Rotation2d.fromDegrees(5.932))),
+        Map.entry(AutoDestination.REEF_4_LEFT, new Pose2d(13.881, 5.396, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_4_RIGHT, new Pose2d(13.615, 5.552, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_6_LEFT, new Pose2d(14.667, 4.077, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_6_RIGHT, new Pose2d(14.667, 4.329, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_8_LEFT, new Pose2d(13.830, 2.6248, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_8_RIGHT, new Pose2d(14.126, 2.810, Rotation2d.fromDegrees(-98.248))),
+        Map.entry(AutoDestination.REEF_10_LEFT, new Pose2d(12.273, 2.632, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.REEF_10_RIGHT, new Pose2d(12.533, 2.483, Rotation2d.fromDegrees(-117.449))),
+
+        Map.entry(AutoDestination.CORAL_LEFT_1, new Pose2d(16.110, 0.805, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.CORAL_LEFT_2, new Pose2d(16.931, 1.313, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.CORAL_RIGHT_1, new Pose2d(16.670, 6.842, Rotation2d.fromDegrees(-117.440))),
+        Map.entry(AutoDestination.CORAL_RIGHT_2, new Pose2d(15.871, 7.425, Rotation2d.fromDegrees(-117.440)))
 
     );
     public static PathConstraints defaultPathConstraints = new PathConstraints(1.0, 1.0, .5 * Math.PI, 1 * Math.PI);

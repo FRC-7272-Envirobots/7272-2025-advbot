@@ -5,21 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PS4Controller.Button;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.LightstripEnvirobots;
 import frc.robot.subsystems.AlgaeSubsystem;
@@ -33,22 +22,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-
-import java.io.IOException;
-import java.nio.file.Path;
-import java.time.chrono.ThaiBuddhistChronology;
-import java.util.List;
-
-import org.json.simple.parser.ParseException;
-
-import com.ctre.phoenix6.SignalLogger;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.FileVersionException;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -166,18 +142,68 @@ public class RobotContainer {
                 new JoystickButton(m_psoc, 6)
                                 .onTrue(Commands.run(() -> m_algae.algaedown(), m_algae));
 
-                new JoystickButton(m_psoc, 20)
+                new JoystickButton(m_psoc, 7)
+                                .onTrue(Commands.run(() -> m_elevator.elevatorUpStop(), m_elevator));
+
+                new JoystickButton(m_psoc, 8)
+                                .onTrue(Commands.run(() -> m_elevator.elevatorDownStop(), m_elevator));
+
+                new JoystickButton(m_psoc, 10)
                                 .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_LEFT)));
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_1)));
+                new JoystickButton(m_psoc, 11)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_2)));
+                new JoystickButton(m_psoc, 12)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_1)));
+                new JoystickButton(m_psoc, 13)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_2)));
+
                 new JoystickButton(m_psoc, 14)
                                 .onTrue(new PrintCommand("")
                                                 .andThen(m_robotDrive.driveTo(AutoDestination.REEF_6_RIGHT)));
+
+                new JoystickButton(m_psoc, 15)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_6_LEFT)));
+
                 new JoystickButton(m_psoc, 29)
                                 .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_LEFT)));
-                new JoystickButton(m_psoc, 16)
-                                .onTrue(new PrintCommand("")
                                                 .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_RIGHT)));
+
+                new JoystickButton(m_psoc, 17)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_LEFT)));
+
+                new JoystickButton(m_psoc, 18)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_10_RIGHT)));
+
+                new JoystickButton(m_psoc, 19)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_RIGHT)));
+
+                new JoystickButton(m_psoc, 20)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_LEFT)));
+
+                new JoystickButton(m_psoc, 21)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_2_RIGHT)));
+
+                new JoystickButton(m_psoc, 22)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_2_LEFT)));
+
+                new JoystickButton(m_psoc, 23)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_RIGHT)));
+
+                new JoystickButton(m_psoc, 24)
+                                .onTrue(new PrintCommand("")
+                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_LEFT)));
 
                 // new JoystickButton(m_psoc, 7)
                 // .onTrue(Commands.run(()->m_robotDrive., null));

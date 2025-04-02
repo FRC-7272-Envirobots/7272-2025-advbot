@@ -9,35 +9,30 @@ import edu.wpi.first.hal.FRCNetComm.tResourceType;
 
 import java.util.List;
 
-import javax.print.attribute.standard.Destination;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-import com.pathplanner.lib.path.GoalEndState;
-import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.hal.HAL;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.AutoConstants;
@@ -45,11 +40,8 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.AutoDestination;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
-import frc.robot.LimelightHelpers.LimelightTarget_Fiducial;
-import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.LimelightHelpers.RawFiducial;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -132,7 +124,7 @@ public class DriveSubsystem extends SubsystemBase {
                                                                 // module feedforwards
           new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for
                                           // holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+              new PIDConstants(5.0, 0.0, 0.0), // changed from 5 Translation PID constants
               new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
           ),
           config, // The robot configuration
@@ -144,7 +136,7 @@ public class DriveSubsystem extends SubsystemBase {
 
             var alliance = DriverStation.getAlliance();
             if (alliance.isPresent()) {
-              return alliance.get() == DriverStation.Alliance.Red;
+              return false;
             }
             return false;
           },
@@ -171,7 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
             m_rearLeft.getPosition(),
             m_rearRight.getPosition()
         });
-    boolean doRejectUpdate = false;
+    // boolean doRejectUpdate = false;
 
     // System.out.println("outtake robot camera pose settings: \n" +
     // Constants.VisionConstants.OUTTAKE_LIMELIGHT_X_OFFSET.in(Meters) + " m x\n" +
@@ -395,6 +387,8 @@ public class DriveSubsystem extends SubsystemBase {
       new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
       new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90)));
 
+  public static boolean alliance;
+
   // public PathConstraints(double maxVelocityMPS, double maxAccelerationMPSSq,
   // double maxAngularVelocityRadPerSec, double maxAngularAccelerationRadPerSecSq)
   // {
@@ -404,22 +398,29 @@ public class DriveSubsystem extends SubsystemBase {
 
     System.out.println("starting driveTo");
 
-    /*
-     * PathPlannerPath path = new PathPlannerPath(
-     * waypoints,
-     * constraints,
-     * null, // The ideal starting state, this is only relevant for pre-planned
-     * paths, so can be null for on-the-fly paths.
-     * new GoalEndState(0.0, Rotation2d.fromDegrees(-90)) // Goal end state. You can
-     * set a holonomic rotation here. If using a differential drivetrain, the
-     * rotation will have no effect.
-     * );
-     * return ;
-     */
-    Pose2d chosen_auto = AutoConstants.Auto_Map.get(autoDriveto);
-    System.out.println(chosen_auto);
-    return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    if (DriverStation.getRawAllianceStation() == AllianceStationID.Red1) {
+      alliance = false;
+    }
+    if (DriverStation.getRawAllianceStation() == AllianceStationID.Red2) {
+      alliance = false;
+    }
+    if (DriverStation.getRawAllianceStation() == AllianceStationID.Red3) {
+      alliance = false;
+    } else {
+      alliance = true;
+    }
 
+    if (alliance = false) {
+      Pose2d chosen_auto = AutoConstants.RedAuto_Map.get(autoDriveto);
+      System.out.println(chosen_auto);
+      return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    }
+    if (alliance = true) {
+      Pose2d chosen_auto = AutoConstants.blueAuto_Map.get(autoDriveto);
+      System.out.println(chosen_auto);
+      return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    }
+    return null;
   }
 
 }

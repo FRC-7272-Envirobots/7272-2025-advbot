@@ -44,19 +44,22 @@ public class ElevatorSubsystem extends SubsystemBase {
         // "Nobody uses I" apparently, so dont set it.
         config.Slot0.kD = 0.0087045;
         config.Slot0.kS = 0.034662;
-        config.Slot0.kV = 0.10919;
+        config.Slot0.kV = 2.00919;
         config.Slot0.kA = 0.0015569;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 550;// changed from 250 (12 inches / second) * (1 sprocket
-                                                           // rotation / 1.8 inches
-                                                           // ) * (90 motor rotations / sprocket rotation) = ~191 motor
-                                                           // roations / second.8 inches /
-        config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2 * 2; // .5 seconds
-                                                                                                           // to
-                                                                                                           // reach full
-                                                                                                           // speed
-        config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10 * 2; // spread jerk over .1
-                                                                                                  // second
+        config.MotionMagic.MotionMagicCruiseVelocity = 1000;// changed from 250 (12 inches / second) * (1 sprocket
+                                                            // rotation / 1.8 inches
+                                                            // ) * (90 motor rotations / sprocket rotation) = ~191 motor
+                                                            // roations / second.8 inches /
+        config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2 * 100; // .5
+                                                                                                             // seconds
+                                                                                                             // to
+                                                                                                             // reach
+                                                                                                             // full
+                                                                                                             // speed
+        config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10 * 50; // spread jerk over
+                                                                                                   // .1
+                                                                                                   // second
 
         // Limit Switch
         config.HardwareLimitSwitch.ReverseLimitEnable = true;
@@ -92,29 +95,29 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     // basic elevator commands
 
-    public void setElevatorL1() {
-        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        m_leftelevator.setControl(m_request.withPosition(100));
-    }
-
-    public void setElevatorL2() {
-        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        m_leftelevator.setControl(m_request.withPosition(200));
-    }
-
+    // public void setElevatorL1() {
+    // final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+    // m_leftelevator.setControl(m_request.withPosition(80));
+    // }
     public void setElevatorL0() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         m_leftelevator.setControl(m_request.withPosition(0));
     }
 
-    public void setElevatorL4() {
+    public void setElevatorL2() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        m_leftelevator.setControl(m_request.withPosition(450));
+        m_leftelevator.setControl(m_request.withPosition(140));
     }
 
     public void setElevatorL3() {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        m_leftelevator.setControl(m_request.withPosition(300));
+        m_leftelevator.setControl(m_request.withPosition(260));
+
+    }
+
+    public void setElevatorL4() {
+        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        m_leftelevator.setControl(m_request.withPosition(455));
     }
 
     public void elevatorUp() {
