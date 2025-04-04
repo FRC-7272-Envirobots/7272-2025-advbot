@@ -7,7 +7,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 
+import java.awt.Color;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.ModuleConfig;
@@ -42,6 +45,7 @@ import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class DriveSubsystem extends SubsystemBase {
@@ -136,9 +140,10 @@ public class DriveSubsystem extends SubsystemBase {
 
             var alliance = DriverStation.getAlliance();
             if (alliance.isPresent()) {
-              return false;
+              return alliance.get() == DriverStation.Alliance.Red;
             }
             return false;
+
           },
           this // Reference to this subsystem to set requirements
       );
@@ -387,8 +392,6 @@ public class DriveSubsystem extends SubsystemBase {
       new Pose2d(3.0, 1.0, Rotation2d.fromDegrees(0)),
       new Pose2d(5.0, 3.0, Rotation2d.fromDegrees(90)));
 
-  public static boolean alliance;
-
   // public PathConstraints(double maxVelocityMPS, double maxAccelerationMPSSq,
   // double maxAngularVelocityRadPerSec, double maxAngularAccelerationRadPerSecSq)
   // {
@@ -398,29 +401,23 @@ public class DriveSubsystem extends SubsystemBase {
 
     System.out.println("starting driveTo");
 
-    if (DriverStation.getRawAllianceStation() == AllianceStationID.Red1) {
-      alliance = false;
-    }
-    if (DriverStation.getRawAllianceStation() == AllianceStationID.Red2) {
-      alliance = false;
-    }
-    if (DriverStation.getRawAllianceStation() == AllianceStationID.Red3) {
-      alliance = false;
-    } else {
-      alliance = true;
+    Optional<Alliance> ally = DriverStation.getAlliance();
+
+    if (!ally.isPresent()) {
+      System.out.println("no alliance selected");
+      return Commands.none();
     }
 
-    if (alliance = false) {
-      Pose2d chosen_auto = AutoConstants.RedAuto_Map.get(autoDriveto);
-      System.out.println(chosen_auto);
-      return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    Pose2d chosen_auto;
+    if (ally.get() == Alliance.Red) {
+      chosen_auto = AutoConstants.RedAuto_Map.get(autoDriveto);
+    } else {
+      chosen_auto = AutoConstants.blueAuto_Map.get(autoDriveto);
     }
-    if (alliance = true) {
-      Pose2d chosen_auto = AutoConstants.blueAuto_Map.get(autoDriveto);
-      System.out.println(chosen_auto);
-      return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
-    }
-    return null;
+    System.out.println(chosen_auto);
+
+    return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+
   }
 
 }

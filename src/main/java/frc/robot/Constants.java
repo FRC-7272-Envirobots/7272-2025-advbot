@@ -4,18 +4,10 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meter;
-
-import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 
-import javax.print.attribute.standard.Destination;
-
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 import com.pathplanner.lib.path.PathConstraints;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -26,7 +18,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
-import frc.robot.subsystems.DriveSubsystem;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide

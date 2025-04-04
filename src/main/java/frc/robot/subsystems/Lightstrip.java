@@ -14,13 +14,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Lightstrip extends SubsystemBase {
 
- 
- 
-  
   private static final int LENGTH = 300;
 
   private final AddressableLED m_led;
-  
+
   private final AddressableLEDBuffer m_ledBuffer;
   private int start_red = 0;
   private int end_red = 41;
@@ -29,7 +26,7 @@ public class Lightstrip extends SubsystemBase {
   private int start_blue = 67;
   private int end_blue = 106;
   private Timer timer = new Timer();
-  private int  pwm_port = 0;
+  private int pwm_port = 0;
 
   public void alternate(Color color1, Color color2) {
     timer.restart();
@@ -39,12 +36,9 @@ public class Lightstrip extends SubsystemBase {
   /** Creates a new Launcher. */
   public Lightstrip(int pwm_port) {
     super();
-    this.pwm_port=pwm_port;
+    this.pwm_port = pwm_port;
 
-   
     this.m_led = new AddressableLED(this.pwm_port);
-    
-    
 
     // Reuse buffer
     // Length is expensive to set, so only set it once, then just update data
@@ -69,7 +63,6 @@ public class Lightstrip extends SubsystemBase {
       }
     }).withTimeout(duration);
   }
-
 
   public Command setIntakeSuccessColor() {
     return run(() -> setColor(Color.WHITE)).withTimeout(5);
