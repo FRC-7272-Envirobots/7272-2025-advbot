@@ -143,7 +143,8 @@ public class RobotContainer {
                                 .onTrue(Commands.run(() -> m_elevator.setElevatorL3(), m_elevator));
                 new JoystickButton(m_psoc, 4)
                                 .onTrue(Commands.run(() -> m_elevator.setElevatorL4(), m_elevator));
-
+                 new JoystickButton(m_psoc, 5)
+                .onTrue(Commands.run(() -> m_robotDrive.zeroHeading(),m_robotDrive));
                 // new JoystickButton(m_psoc, 5)
                 // .onTrue(Commands.run(() -> m_algae.algaeup(), m_algae));
                 // new JoystickButton(m_psoc, 6)
