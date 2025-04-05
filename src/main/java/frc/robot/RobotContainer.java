@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.LightstripEnvirobots;
+import frc.robot.commands.Routines;
 import frc.robot.subsystems.AlgaeSubsystem;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.DriveSubsystem;
@@ -43,6 +44,7 @@ public class RobotContainer {
         private final AlgaeSubsystem m_algae = new AlgaeSubsystem();
         private final Climber m_climber = new Climber();
         private final Lightstrip m_Lightstrip0 = new Lightstrip(0);
+        private final Routines m_Routines = new Routines(m_elevator, m_outtake, m_robotDrive);
         // private final Lightstrip m_Lightstrip1 = new Lightstrip(1);
         // The driver's controller
         public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
@@ -129,20 +131,20 @@ public class RobotContainer {
                                 .whileTrue(m_elevator.elevatorUpStop());
 
                 new JoystickButton(m_psoc, 1)
-                                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL0(), m_elevator));
+                                .onTrue(Commands.run(() -> m_elevator.setElevatorL0(), m_elevator));
                 // new JoystickButton(m_psoc,)
                 // .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL1(), m_elevator));
                 new JoystickButton(m_psoc, 2)
-                                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL2(), m_elevator));
+                                .onTrue(Commands.run(() -> m_elevator.setElevatorL2(), m_elevator));
                 new JoystickButton(m_psoc, 3)
-                                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL3(), m_elevator));
+                                .onTrue(Commands.run(() -> m_elevator.setElevatorL3(), m_elevator));
                 new JoystickButton(m_psoc, 4)
-                                .onTrue(Commands.runOnce(() -> m_elevator.setElevatorL4(), m_elevator));
+                                .onTrue(Commands.run(() -> m_elevator.setElevatorL4(), m_elevator));
 
-                new JoystickButton(m_psoc, 5)
-                                .onTrue(Commands.run(() -> m_algae.algaeup(), m_algae));
-                new JoystickButton(m_psoc, 6)
-                                .onTrue(Commands.run(() -> m_algae.algaedown(), m_algae));
+                // new JoystickButton(m_psoc, 5)
+                // .onTrue(Commands.run(() -> m_algae.algaeup(), m_algae));
+                // new JoystickButton(m_psoc, 6)
+                // .onTrue(Commands.run(() -> m_algae.algaedown(), m_algae));
 
                 new JoystickButton(m_psoc, 7)
                                 .onTrue(Commands.run(() -> m_elevator.elevatorUpStop(), m_elevator));
@@ -206,6 +208,10 @@ public class RobotContainer {
                 new JoystickButton(m_psoc, 24)
                                 .onTrue(new PrintCommand("")
                                                 .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_LEFT)));
+
+                new JoystickButton(m_psoc, 27)
+                                .onTrue(new RunCommand(() -> m_Routines.Systemtest(), m_elevator, m_outtake,
+                                                m_robotDrive));
 
                 // new JoystickButton(m_psoc, 7)
                 // .onTrue(Commands.run(()->m_robotDrive., null));

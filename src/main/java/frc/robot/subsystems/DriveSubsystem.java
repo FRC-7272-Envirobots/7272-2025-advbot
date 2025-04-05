@@ -293,6 +293,11 @@ public class DriveSubsystem extends SubsystemBase {
    *                      field.
    */
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+
+    if (last_Auto_Command != null && (xSpeed > .1 || ySpeed > .1)) {
+      last_Auto_Command.cancel();
+      last_Auto_Command = null;
+    }
     // Convert the commanded speeds into the correct units for the drivetrain
     double xSpeedDelivered = xSpeed * DriveConstants.kMaxSpeedMetersPerSecond * DriveConstants.DRIVE_LIMITER;
     double ySpeedDelivered = ySpeed * DriveConstants.kMaxSpeedMetersPerSecond * DriveConstants.DRIVE_LIMITER;
@@ -335,6 +340,34 @@ public class DriveSubsystem extends SubsystemBase {
     m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+  }
+
+  public void setfoward() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(-0)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(-0)));
+    m_rearRight.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(0)));
+  }
+
+  public void setbackwards() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(0)));
+    m_frontRight.setDesiredState(new SwerveModuleState(-10, Rotation2d.fromDegrees(-0)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(-0)));
+    m_rearRight.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(0)));
+  }
+
+  public void setleft() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(90)));
+    m_frontRight.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(-90)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(-90)));
+    m_rearRight.setDesiredState(new SwerveModuleState(1, Rotation2d.fromDegrees(90)));
+  }
+
+  public void setright() {
+    m_frontLeft.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(90)));
+    m_frontRight.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(-90)));
+    m_rearLeft.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(-90)));
+    m_rearRight.setDesiredState(new SwerveModuleState(-1, Rotation2d.fromDegrees(90)));
   }
 
   /**
@@ -416,8 +449,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
     System.out.println(chosen_auto);
 
-    return AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
-
+    Command autoCommand = AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
+    last_Auto_Command = autoCommand;
+    return autoCommand;
   }
+
+  private Command last_Auto_Command = null;
 
 }

@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.controls.VelocityDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.ForwardLimitSourceValue;
@@ -47,16 +48,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         config.Slot0.kV = 2.00919;
         config.Slot0.kA = 0.0015569;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 1000;// changed from 250 (12 inches / second) * (1 sprocket
-                                                            // rotation / 1.8 inches
-                                                            // ) * (90 motor rotations / sprocket rotation) = ~191 motor
-                                                            // roations / second.8 inches /
-        config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2 * 100; // .5
-                                                                                                             // seconds
-                                                                                                             // to
-                                                                                                             // reach
-                                                                                                             // full
-                                                                                                             // speed
+        // Zero means no limit to cruise velocity
+        config.MotionMagic.MotionMagicCruiseVelocity = 1000; // changed from 250 (12 inches / second) * (1 sprocket
+                                                             // rotation / 1.8 inches
+                                                             // ) * (90 motor rotations / sprocket rotation) = ~191
+                                                             // motor
+                                                             // roations / second.8 inches /
+        config.MotionMagic.MotionMagicAcceleration = config.MotionMagic.MotionMagicCruiseVelocity * 2 * 100; //
+        // .5
+        // seconds
+        // to
+        // reach
+        // full
+        // speed
         config.MotionMagic.MotionMagicJerk = config.MotionMagic.MotionMagicAcceleration * 10 * 50; // spread jerk over
                                                                                                    // .1
                                                                                                    // second
@@ -121,15 +125,19 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public void elevatorUp() {
+        // m_leftelevator.setControl(new VelocityDutyCycle(.2 *
+        // DriveConstants.ELEVATOR_LIMITER));
         m_leftelevator.set(.2 * DriveConstants.ELEVATOR_LIMITER);
     }
 
     public void elevatorDown() {
+        // m_leftelevator.setControl(new VelocityDutyCycle(-.2 *
+        // DriveConstants.ELEVATOR_LIMITER));
         m_leftelevator.set(-.2 * DriveConstants.ELEVATOR_LIMITER);
-
     }
 
     public void elevatorStop() {
+        // m_leftelevator.setControl(new VelocityDutyCycle(0));
         m_leftelevator.set(0);
     }
 

@@ -19,15 +19,15 @@ public class OuttakeSubsystem extends SubsystemBase {
     }
 
     public Command normalOuttake() {
-        m_leftouttake.set(.1);
+        m_leftouttake.set(1.);
 
         return null;
 
     }
 
-    public void stopOuttake() {
-        m_leftouttake.set(-.005);
-
+    public Command stopOuttake() {
+        m_leftouttake.set(0);
+        return null;
     }
 
 }
