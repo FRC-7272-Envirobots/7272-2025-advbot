@@ -49,6 +49,7 @@ public class RobotContainer {
         // The driver's controller
         public static XboxController m_driverController = new XboxController(OIConstants.kDriverControllerPort);
         Joystick m_psoc = new Joystick(1);
+        private boolean m_fieldRelative = true;
 
         /**
          * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -78,7 +79,7 @@ public class RobotContainer {
                                                                                 OIConstants.kDriveDeadband),
                                                                 -MathUtil.applyDeadband(m_driverController.getRightX(),
                                                                                 OIConstants.kDriveDeadband),
-                                                                true),
+                                                                m_fieldRelative),
                                                 m_robotDrive));
         }
 
@@ -108,8 +109,10 @@ public class RobotContainer {
                 // .whileFalse(new RunCommand(() -> m_algae.algaestop(), m_algae));
 
                 new JoystickButton(m_driverController, XboxController.Button.kY.value)
-                                .whileTrue(new RunCommand(() -> m_algae.algaedown(), m_algae))
-                                .whileFalse(new RunCommand(() -> m_algae.armstop(), m_algae));
+                                // .whileTrue(new RunCommand(() -> m_algae.algaedown(), m_algae))
+                                // .whileFalse(new RunCommand(() -> m_algae.armstop(), m_algae));
+                                .whileTrue(new RunCommand(() -> m_fieldRelative = false))
+                                .whileFalse(new RunCommand(() -> m_fieldRelative = true));
 
                 new JoystickButton(m_driverController, XboxController.Button.kX.value)
                                 .whileTrue(new RunCommand(() -> m_algae.alagespin(), m_algae))
@@ -146,11 +149,11 @@ public class RobotContainer {
                 // new JoystickButton(m_psoc, 6)
                 // .onTrue(Commands.run(() -> m_algae.algaedown(), m_algae));
 
-                new JoystickButton(m_psoc, 7)
-                                .onTrue(Commands.run(() -> m_elevator.elevatorUpStop(), m_elevator));
+                // new JoystickButton(m_psoc, 7)
+                // .onTrue(Commands.run(() -> m_elevator.elevatorUpStop(), m_elevator));
 
-                new JoystickButton(m_psoc, 8)
-                                .onTrue(Commands.run(() -> m_elevator.elevatorDownStop(), m_elevator));
+                // new JoystickButton(m_psoc, 8)
+                // .onTrue(Commands.run(() -> m_elevator.elevatorDownStop(), m_elevator));
 
                 new JoystickButton(m_psoc, 10)
                                 .onTrue(new PrintCommand("")
