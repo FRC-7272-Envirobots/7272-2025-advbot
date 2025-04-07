@@ -15,14 +15,11 @@ public class OuttakeSubsystem extends SubsystemBase {
 
     public OuttakeSubsystem() {
         config = new TalonFXConfiguration();
-
     }
 
     public Command normalOuttake() {
-        m_leftouttake.set(1.);
-
+        m_leftouttake.set(0.8);
         return null;
-
     }
 
     public Command stopOuttake() {

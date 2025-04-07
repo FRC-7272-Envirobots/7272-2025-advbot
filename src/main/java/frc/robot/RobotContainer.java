@@ -5,11 +5,10 @@
 package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.Joystick;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.LightstripEnvirobots;
@@ -23,8 +22,10 @@ import frc.robot.subsystems.Lightstrip;
 import frc.robot.subsystems.OuttakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -81,6 +82,9 @@ public class RobotContainer {
                                                                                 OIConstants.kDriveDeadband),
                                                                 m_fieldRelative),
                                                 m_robotDrive));
+
+                // NetworkTable.getTable("SmartDashboard").putDouble("Pi", 3.14159);
+
         }
 
         /**
@@ -143,8 +147,7 @@ public class RobotContainer {
                                 .onTrue(Commands.run(() -> m_elevator.setElevatorL3(), m_elevator));
                 new JoystickButton(m_psoc, 4)
                                 .onTrue(Commands.run(() -> m_elevator.setElevatorL4(), m_elevator));
-                 new JoystickButton(m_psoc, 5)
-                .onTrue(Commands.run(() -> m_robotDrive.zeroHeading(),m_robotDrive));
+
                 // new JoystickButton(m_psoc, 5)
                 // .onTrue(Commands.run(() -> m_algae.algaeup(), m_algae));
                 // new JoystickButton(m_psoc, 6)
@@ -214,7 +217,7 @@ public class RobotContainer {
                                                 .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_LEFT)));
 
                 new JoystickButton(m_psoc, 27)
-                                .onTrue(new RunCommand(() -> m_Routines.Systemtest(), m_elevator, m_outtake,
+                                .onTrue(new RunCommand(() -> Systemtest(), m_elevator, m_outtake,
                                                 m_robotDrive));
 
                 // new JoystickButton(m_psoc, 7)
@@ -258,6 +261,24 @@ public class RobotContainer {
          */
 
         private final Command autoCommand = new PathPlannerAuto("Example Auto");
+
+        public Command Systemtest() {
+                return new InstantCommand(() -> m_outtake.normalOuttake()).andThen(new WaitCommand(3))
+                                .andThen(() -> m_outtake.stopOuttake())
+                                .andThen(Commands.runOnce(() -> m_elevator.setElevatorL2())).andThen(new WaitCommand(2))
+                                .andThen(Commands.runOnce(() -> m_elevator.setElevatorL0())).andThen(new WaitCommand(2))
+                                .andThen(new InstantCommand(() -> m_robotDrive.setX())).andThen(new WaitCommand(5))
+                                .andThen(new InstantCommand(() -> m_robotDrive.setfoward())).andThen(new WaitCommand(4))
+                                .andThen(new InstantCommand(() -> m_robotDrive.setbackwards()))
+                                .andThen(new WaitCommand(4))
+                                .andThen(new InstantCommand(() -> m_robotDrive.setleft())).andThen(new WaitCommand(4))
+                                .andThen(new InstantCommand(() -> m_robotDrive.setright())).andThen(new WaitCommand(4));
+
+        }
+
+        public double getElevatorSpeed() {
+                return this.m_elevator.getElevatorSpeed();
+        }
 
         public Command getAutonomousCommand() {
                 return autoChooser.getSelected();
