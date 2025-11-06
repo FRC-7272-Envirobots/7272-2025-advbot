@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import java.util.Map;
+import java.util.Optional;
 
 import com.pathplanner.lib.path.PathConstraints;
 
@@ -18,6 +19,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -41,7 +44,7 @@ public final class Constants {
 
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
+    public static final double kMaxSpeedMetersPerSecond = 2.4;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
 
     // Chassis configuration
@@ -93,6 +96,7 @@ public final class Constants {
     public static final int AlgaeRemoverArmCanId = 24;
     public static final int AlgaeRemoverSpinnerCanID = 25;
     public static final int ClimberCanId = 26;
+    public static boolean Teamblue = false;
 
   }
 

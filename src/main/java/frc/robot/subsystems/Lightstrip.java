@@ -64,14 +64,6 @@ public class Lightstrip extends SubsystemBase {
     }).withTimeout(duration);
   }
 
-  public Command setIntakeSuccessColor() {
-    return run(() -> setColor(Color.WHITE)).withTimeout(5);
-  }
-
-  public void setShootCompletedColor() {
-    setColor(Color.ORANGE);
-  }
-
   public void lightSidesTest() {
     for (var i = 0; i < m_ledBuffer.getLength(); i++) {
       // Sets the specified LED to the RGB values for red

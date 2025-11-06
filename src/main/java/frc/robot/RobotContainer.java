@@ -6,10 +6,14 @@ package frc.robot;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.LEDPattern;
 import frc.robot.Constants.OIConstants;
 import frc.robot.commands.LightstripEnvirobots;
 import frc.robot.commands.Routines;
@@ -27,6 +31,12 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import java.util.Optional;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
@@ -115,8 +125,8 @@ public class RobotContainer {
                 new JoystickButton(m_driverController, XboxController.Button.kY.value)
                                 // .whileTrue(new RunCommand(() -> m_algae.algaedown(), m_algae))
                                 // .whileFalse(new RunCommand(() -> m_algae.armstop(), m_algae));
-                                .whileTrue(new RunCommand(() -> m_fieldRelative = false))
-                                .whileFalse(new RunCommand(() -> m_fieldRelative = true));
+                                .whileTrue(new RunCommand(() -> m_fieldRelative = true))
+                                .whileFalse(new RunCommand(() -> m_fieldRelative = false));
 
                 new JoystickButton(m_driverController, XboxController.Button.kX.value)
                                 .whileTrue(new RunCommand(() -> m_algae.alagespin(), m_algae))
@@ -126,6 +136,8 @@ public class RobotContainer {
                 new JoystickButton(m_driverController, XboxController.Button.kA.value)
                                 .whileTrue(new RunCommand(() -> m_outtake.normalOuttake(), m_outtake))
                                 .whileFalse(new RunCommand(() -> m_outtake.stopOuttake(), m_outtake));
+                new JoystickButton(m_driverController, XboxController.Button.kX.value)
+                                .whileTrue(new RunCommand(() -> m_Lightstrip0.lightSidesTest()));
 
                 // BUTTON BOARD BUTTONS
 
@@ -159,66 +171,80 @@ public class RobotContainer {
                 // new JoystickButton(m_psoc, 8)
                 // .onTrue(Commands.run(() -> m_elevator.elevatorDownStop(), m_elevator));
 
-                new JoystickButton(m_psoc, 10)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_1)));
-                new JoystickButton(m_psoc, 11)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_2)));
-                new JoystickButton(m_psoc, 12)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_1)));
-                new JoystickButton(m_psoc, 13)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_2)));
+                Optional<Alliance> ally = DriverStation.getAlliance();
 
-                new JoystickButton(m_psoc, 14)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_6_RIGHT)));
+                // new JoystickButton(m_driverController, XboxController.Button.kY.value)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_1)));
+                // new JoystickButton(m_driverController, XboxController.Button.kY.value);
+                if (ally.get() == Alliance.Blue) {
+                        m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_1);
 
-                new JoystickButton(m_psoc, 15)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_6_LEFT)));
+                }
+                if (m_driverController.getAButton() == true) {
+                        if (ally.get() == Alliance.Blue) {
+                                m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_1);
+                        } else {
+                                m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_1);
+                        }
+                }
+                // new JoystickButton(m_psoc, 11)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_LEFT_2)));
+                // new JoystickButton(m_psoc, 12)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_1)));
+                // new JoystickButton(m_psoc, 13)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.CORAL_RIGHT_2)));
 
-                new JoystickButton(m_psoc, 29)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_RIGHT)));
+                // new JoystickButton(m_psoc, 14)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_6_RIGHT)));
 
-                new JoystickButton(m_psoc, 17)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_LEFT)));
+                // new JoystickButton(m_psoc, 15)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_6_LEFT)));
 
-                new JoystickButton(m_psoc, 18)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_10_RIGHT)));
+                // new JoystickButton(m_psoc, 29)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_RIGHT)));
 
-                new JoystickButton(m_psoc, 19)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_RIGHT)));
+                // new JoystickButton(m_psoc, 17)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_8_LEFT)));
 
-                new JoystickButton(m_psoc, 20)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_LEFT)));
+                // new JoystickButton(m_psoc, 18)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_10_RIGHT)));
 
-                new JoystickButton(m_psoc, 21)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_2_RIGHT)));
+                // new JoystickButton(m_psoc, 19)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_RIGHT)));
 
-                new JoystickButton(m_psoc, 22)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_2_LEFT)));
+                // new JoystickButton(m_psoc, 20)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_12_LEFT)));
 
-                new JoystickButton(m_psoc, 23)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_RIGHT)));
+                // new JoystickButton(m_psoc, 21)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_2_RIGHT)));
 
-                new JoystickButton(m_psoc, 24)
-                                .onTrue(new PrintCommand("")
-                                                .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_LEFT)));
+                // new JoystickButton(m_psoc, 22)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_2_LEFT)));
 
-                new JoystickButton(m_psoc, 27)
-                                .onTrue(new RunCommand(() -> Systemtest(), m_elevator, m_outtake,
-                                                m_robotDrive));
+                // new JoystickButton(m_psoc, 23)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_RIGHT)));
+
+                // new JoystickButton(m_psoc, 24)
+                // .onTrue(new PrintCommand("")
+                // .andThen(m_robotDrive.driveTo(AutoDestination.REEF_4_LEFT)));
+
+                // new JoystickButton(m_psoc, 27)
+                // .onTrue(new RunCommand(() -> Systemtest(), m_elevator, m_outtake,
+                // m_robotDrive));
 
                 // new JoystickButton(m_psoc, 7)
                 // .onTrue(Commands.run(()->m_robotDrive., null));

@@ -5,14 +5,19 @@
 package frc.robot.commands;
 
 import java.awt.Color;
+import java.util.Optional;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.subsystems.Lightstrip;
 
 public class LightstripEnvirobots extends Command {
   Lightstrip lightstrip;
   Timer timer;
+  public boolean alianceblue;
 
   /** Creates a new LightstripEnvirobots. */
   public LightstripEnvirobots(Lightstrip lightstrip) {
@@ -29,13 +34,19 @@ public class LightstripEnvirobots extends Command {
   }
 
   // Called every time the scheduler runs while the command is scheduled.
+  @SuppressWarnings("unused")
   @Override
   public void execute() {
-    //System.out.println(timer.get());
-    if((Math.round(timer.get()) % 2) == 0){
-      lightstrip.setColor(Color.BLUE);
+    Optional<Alliance> aliance = DriverStation.getAlliance();
+    // System.out.println(timer.get());
+    if ((Math.round(timer.get()) % 2) == 0) {
+      if (aliance.get() == Alliance.Blue) {
+        lightstrip.setColor(Color.BLUE);
+      } else {
+        lightstrip.setColor(Color.RED);
+      }
     } else {
-        lightstrip.setColor(Color.GREEN);
+      lightstrip.setColor(Color.GREEN);
     }
   }
 

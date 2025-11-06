@@ -16,7 +16,7 @@ public class AlgaeSubsystem extends SubsystemBase {
   private static final SparkMax m_algaearm = new SparkMax(RobotConstants.AlgaeRemoverArmCanId, MotorType.kBrushless);
 
   SparkAbsoluteEncoder m_armEncoder = m_algaearm.getAbsoluteEncoder();
-
+  
   // TalonFX m_algaearm = new TalonFX(RobotConstants.AlgaeRemoverArmCanId);
   // public double encodervalue = m_armEncoder.getPosition();
 
@@ -79,5 +79,9 @@ public class AlgaeSubsystem extends SubsystemBase {
     }
 
   }
+  public void resetalgae(){
+    
+  }
+
 
 }

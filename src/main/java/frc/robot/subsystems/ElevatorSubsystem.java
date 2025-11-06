@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Volts;
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -87,10 +86,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
     }
 
-    private void setControl(ControlRequest control) {
-        m_leftelevator.setControl(control);
-    }
-
+    
     // basic elevator commands
 
     // public void setElevatorL1() {

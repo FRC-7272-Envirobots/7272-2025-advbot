@@ -7,9 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 
-import java.awt.Color;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -23,7 +21,6 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.hal.HAL;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -33,7 +30,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.networktables.BooleanPublisher;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -44,6 +40,7 @@ import frc.robot.AutoDestination;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
+import frc.robot.commands.LightstripEnvirobots;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -442,12 +439,13 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     Pose2d chosen_auto;
-    if (ally.get() == Alliance.Red) {
-      chosen_auto = AutoConstants.RedAuto_Map.get(autoDriveto);
-    } else {
-      chosen_auto = AutoConstants.blueAuto_Map.get(autoDriveto);
-    }
-    System.out.println(chosen_auto);
+    // if (ally.get() == Alliance.Red) {
+    //
+    // } else {
+    // chosen_auto = AutoConstants.blueAuto_Map.get(autoDriveto);
+    // }
+    // System.out.println(chosen_auto);
+    chosen_auto = AutoConstants.RedAuto_Map.get(autoDriveto);
 
     Command autoCommand = AutoBuilder.pathfindToPose(chosen_auto, AutoConstants.defaultPathConstraints);
     last_Auto_Command = autoCommand;
